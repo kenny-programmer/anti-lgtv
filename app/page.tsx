@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { withAuth } from "@workos-inc/authkit-nextjs";
 import { Header } from "@/components/Header";
 import { HeroTag } from "@/components/HeroTag";
+import { HowItWorks } from "@/components/HowItWorks";
+import { ScrollLink } from "@/components/ScrollLink";
 import { buttonPrimary, monoLabel, textLink } from "@/components/ui";
 import { SITE_NAME } from "@/lib/site";
 
@@ -36,16 +38,21 @@ export default async function LandingPage() {
   if (user) redirect("/dashboard");
 
   return (
-    <>
-      <div className="surface-ink wrapping-dots relative overflow-hidden">
-        <Header signedIn={false} />
-
+    <div className="surface-ink wrapping-dots">
+      <Header signedIn={false} />
+      {/* The hero clips its sides and bottom but not its top, so the ribbon runs up
+          behind the transparent header to the red top edge. */}
+      <div className="hero relative overflow-x-clip [clip-path:inset(-60rem_0_0_0)]">
+        <div
+          aria-hidden="true"
+          className="hero-shade pointer-events-none absolute inset-0 bg-black opacity-0"
+        />
         <section className="relative mx-auto grid max-w-6xl grid-cols-12 gap-x-6 px-4 pb-20 pt-10 sm:px-6 sm:pt-14 lg:pb-28 lg:pt-20">
           <div className="col-span-12 lg:col-span-7">
             <p className={`${monoLabel} rise text-surface-muted [--d:80ms]`}>
               Secret Santa <span aria-hidden="true">/</span> Holiday gift exchange
             </p>
-            <h1 className="mt-6 font-serif text-[clamp(3.5rem,9vw,7rem)] font-normal leading-[0.98] tracking-[-0.02em] text-balance">
+            <h1 className="hero-lift mt-6 font-serif text-[clamp(3.5rem,9vw,7rem)] font-normal leading-[0.98] tracking-[-0.02em] text-balance">
               <span className="line-mask">
                 <span className="[--d:150ms]">Secret Santa,</span>
               </span>{" "}
@@ -64,7 +71,7 @@ export default async function LandingPage() {
               <a href="/sign-in" className={buttonPrimary}>
                 Sign in with Google
               </a>
-              <a href="#how" className={`group ${textLink}`}>
+              <ScrollLink href="#how" focusId="how-title" className={`group ${textLink}`}>
                 How the draw works
                 <span
                   aria-hidden="true"
@@ -72,7 +79,7 @@ export default async function LandingPage() {
                 >
                   &darr;
                 </span>
-              </a>
+              </ScrollLink>
             </div>
           </div>
 
@@ -107,46 +114,8 @@ export default async function LandingPage() {
         </div>
       </div>
 
-      <main>
-        <section
-          id="how"
-          aria-labelledby="how-title"
-          className="mx-auto grid max-w-6xl grid-cols-12 gap-x-6 px-4 py-20 sm:px-6 lg:py-28"
-        >
-          <div className="col-span-12 lg:col-span-4">
-            <div className="lg:sticky lg:top-10">
-              <p className={`${monoLabel} text-muted`}>How it works</p>
-              <h2
-                id="how-title"
-                className="mt-4 font-serif text-[clamp(2.5rem,5vw,3.5rem)] leading-[1.02] tracking-[-0.02em] text-balance"
-              >
-                Four steps, <em className="italic">one</em> draw.
-              </h2>
-            </div>
-          </div>
-          <ol className="col-span-12 mt-12 border-t border-ink lg:col-span-8 lg:mt-2">
-            {STEPS.map((step, index) => (
-              <li
-                key={step.title}
-                className="step-row relative grid grid-cols-[3.5rem_1fr] items-baseline gap-x-5 py-7 sm:grid-cols-[4.5rem_15rem_1fr] sm:gap-x-8"
-              >
-                <span
-                  aria-hidden="true"
-                  className="step-rule absolute inset-x-0 bottom-0 h-px bg-rule"
-                />
-                <span aria-hidden="true" className="block overflow-hidden pb-1">
-                  <span className="step-numeral block font-serif text-5xl leading-none text-ribbon sm:text-6xl">
-                    {index + 1}
-                  </span>
-                </span>
-                <h3 className="step-copy font-serif text-2xl leading-tight">{step.title}</h3>
-                <p className="step-copy col-start-2 mt-2 max-w-[62ch] text-muted sm:col-start-3 sm:mt-0">
-                  {step.body}
-                </p>
-              </li>
-            ))}
-          </ol>
-        </section>
+      <main className="surface-paper">
+        <HowItWorks steps={STEPS} />
 
         <div aria-hidden="true" className="ribbon-edge" />
 
@@ -162,7 +131,7 @@ export default async function LandingPage() {
         </section>
       </main>
 
-      <footer className="surface-ink">
+      <footer className="bg-ink">
         <div className="reveal-on-scroll mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-8 gap-y-2 px-4 py-6 sm:px-6">
           <p className="font-serif text-xl">{SITE_NAME}</p>
           <p className={`${monoLabel} text-surface-muted`}>
@@ -170,6 +139,6 @@ export default async function LandingPage() {
           </p>
         </div>
       </footer>
-    </>
+    </div>
   );
 }

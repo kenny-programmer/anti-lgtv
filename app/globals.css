@@ -33,6 +33,7 @@
   --surface-rule: rgb(15 35 27 / 0.16);
   --ring: var(--ink);
   --twine: #fffdf8;
+  --header-bg: var(--paper);
 }
 
 @theme inline {
@@ -81,8 +82,52 @@ body {
   --surface-rule: rgb(245 240 230 / 0.18);
   --ring: var(--paper);
   --twine: var(--cream);
+  --header-bg: var(--ink);
   background-color: var(--ink);
   color: var(--paper);
+}
+
+/* Back to paper inside an evergreen page (landing sections below the hero). */
+.surface-paper {
+  --surface-fg: var(--ink);
+  --surface-muted: var(--muted);
+  --surface-rule: rgb(15 35 27 / 0.16);
+  --ring: var(--ink);
+  --twine: #fffdf8;
+  --header-bg: var(--paper);
+  background-color: var(--paper);
+  color: var(--ink);
+}
+
+/* The sticky header leaves room for itself when the page scrolls to a target. */
+html {
+  scroll-padding-top: 8.5rem;
+}
+
+@media (min-width: 640px) {
+  html {
+    scroll-padding-top: 6.5rem;
+  }
+}
+
+/* Sticky header: an opaque layer and a hairline, faded in on scroll where supported. */
+.header-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--header-bg);
+}
+
+.header-rule {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--surface-rule);
+}
+
+.scroll-progress {
+  display: none;
 }
 
 /* Tone-on-tone wrapping paper: a half-drop dot, about 8% cream on evergreen. */
@@ -184,10 +229,18 @@ body {
   mask-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ccircle cx='8' cy='8' r='8'/%3E%3C/svg%3E"),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4'/%3E%3C/svg%3E");
-  -webkit-mask-size: 16px 16px, 100% 100%;
-  mask-size: 16px 16px, 100% 100%;
-  -webkit-mask-position: 50% calc(var(--tag-hole-y) - 8px), 0 0;
-  mask-position: 50% calc(var(--tag-hole-y) - 8px), 0 0;
+  -webkit-mask-size:
+    16px 16px,
+    100% 100%;
+  mask-size:
+    16px 16px,
+    100% 100%;
+  -webkit-mask-position:
+    50% calc(var(--tag-hole-y) - 8px),
+    0 0;
+  mask-position:
+    50% calc(var(--tag-hole-y) - 8px),
+    0 0;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   -webkit-mask-composite: xor;
@@ -250,6 +303,63 @@ body {
 .ticker-track {
   display: flex;
   width: max-content;
+}
+
+/* How it works: the sticky step column appears once the script is running,
+   and only on large screens; the rows below always carry the content. */
+.step-sticky {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .how[data-ready] .step-sticky {
+    display: block;
+  }
+}
+
+/* Once a step has left, it is gone (not merely transparent). */
+.step-exit {
+  visibility: hidden;
+}
+
+/* The ribbon thread down the steps, with a knot per step. */
+.ribbon-thread {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -0.875rem;
+  width: 2px;
+  background: var(--ribbon);
+  transform-origin: 50% 0;
+}
+
+.step-knot {
+  position: absolute;
+  left: calc(-0.875rem - 5px);
+  top: 2.4rem;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--ribbon);
+  border-radius: 9999px;
+  background: var(--paper);
+}
+
+.step-knot-fill {
+  position: absolute;
+  inset: 1px;
+  border-radius: 9999px;
+  background: var(--ribbon);
+}
+
+/* Countdown digits roll in their own little windows. */
+.roll-window {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+.roll-window > span {
+  display: inline-block;
 }
 
 /* Paper confetti: one-shot, decorative. */
@@ -326,71 +436,9 @@ body {
     }
   }
 
-  .tag-drop {
-    animation: tag-drop 560ms cubic-bezier(0.25, 1, 0.5, 1) 450ms both;
-  }
-
-  @keyframes tag-drop {
-    from {
-      opacity: 0;
-      transform: translateY(-120px);
-    }
-    35% {
-      opacity: 1;
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-
-  /* A damped pendulum about the twine anchor, then a slow ambient sway. */
-  .tag-swing {
-    transform-origin: 50% 0;
-    animation:
-      pendulum 1600ms linear 820ms both,
-      sway 6.6s ease-in-out 2420ms infinite;
-  }
-
-  .tag-pendulum {
-    transform-origin: 50% 0;
-    animation: pendulum 1600ms linear both;
-  }
-
-  /* Damped pendulum about the twine anchor: 9, -5, 3, -1.5, rest at 0. */
-  @keyframes pendulum {
-    0% {
-      transform: rotate(9deg);
-      animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
-    }
-    30% {
-      transform: rotate(-5deg);
-      animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
-    }
-    55% {
-      transform: rotate(3deg);
-      animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
-    }
-    78% {
-      transform: rotate(-1.5deg);
-      animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
-    }
-    100% {
-      transform: rotate(0deg);
-    }
-  }
-
-  @keyframes sway {
-    0%,
-    100% {
-      transform: rotate(0deg);
-    }
-    25% {
-      transform: rotate(1.6deg);
-    }
-    75% {
-      transform: rotate(-1.6deg);
-    }
+  /* The hero tag fades in while its string settles (opacity only). */
+  .tag-appear {
+    animation: fade-in 500ms ease-out 450ms both;
   }
 
   .ticker-track {
@@ -443,7 +491,8 @@ body {
   }
 
   .confetti-piece {
-    animation: confetti 1400ms cubic-bezier(0.2, 0.6, 0.35, 1) var(--delay, 0ms) both;
+    animation: confetti 1400ms cubic-bezier(0.2, 0.6, 0.35, 1) var(--delay, 0ms)
+      both;
   }
 
   @keyframes confetti {
@@ -453,15 +502,16 @@ body {
     }
     30% {
       opacity: 1;
-      transform: translate(calc(-50% + var(--x) * 0.7), var(--up)) rotate(calc(var(--r) * 0.4))
-        scale(1);
+      transform: translate(calc(-50% + var(--x) * 0.7), var(--up))
+        rotate(calc(var(--r) * 0.4)) scale(1);
     }
     85% {
       opacity: 1;
     }
     100% {
       opacity: 0;
-      transform: translate(calc(-50% + var(--x)), var(--fall)) rotate(var(--r)) scale(1);
+      transform: translate(calc(-50% + var(--x)), var(--fall)) rotate(var(--r))
+        scale(1);
     }
   }
 
@@ -511,7 +561,8 @@ body {
   }
 
   .transition-quick {
-    transition-property: color, background-color, border-color, text-decoration-color, transform;
+    transition-property:
+      color, background-color, border-color, text-decoration-color, transform;
     transition-duration: 150ms;
     transition-timing-function: ease-out;
   }
@@ -574,6 +625,195 @@ body {
     }
     to {
       transform: none;
+    }
+  }
+
+  /* ---------------- Part D: scroll-linked effects and interaction ------------- */
+
+  .demo-hint-arrow {
+    display: inline-block;
+    transition: transform 150ms ease-out;
+  }
+
+  .demo-hint-arrow-host:hover .demo-hint-arrow {
+    transform: translateX(3px);
+  }
+
+  .roll-window > span {
+    animation: roll-in 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  @keyframes roll-in {
+    from {
+      transform: translateY(-100%);
+    }
+    to {
+      transform: none;
+    }
+  }
+
+  .tick-tag {
+    animation: tick 220ms cubic-bezier(0.3, 0.7, 0.4, 1);
+  }
+
+  @supports (animation-timeline: scroll()) {
+    /* Header condenses after ~80px of scroll; a red line tracks page progress. */
+    .header-bg,
+    .header-rule {
+      animation: fade-in linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 80px;
+    }
+
+    .header-mark {
+      transform-origin: 0 50%;
+      animation: condense linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 80px;
+    }
+
+    .scroll-progress {
+      display: block;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 2px;
+      background: var(--ribbon);
+      transform-origin: 0 50%;
+      animation: grow-x linear both;
+      animation-timeline: scroll(root);
+    }
+  }
+
+  @supports (animation-timeline: view()) {
+    /* Hero: as it scrolls away the tag drifts and tilts, the headline lifts and
+       the evergreen deepens a touch. */
+    .hero {
+      view-timeline: --hero block;
+    }
+
+    .hero-drift {
+      transform-origin: 50% 0;
+      animation: hero-drift linear both;
+      animation-timeline: --hero;
+      animation-range: exit 0% exit 100%;
+    }
+
+    .hero-lift {
+      animation: hero-lift linear both;
+      animation-timeline: --hero;
+      animation-range: exit 0% exit 100%;
+    }
+
+    .hero-shade {
+      animation: hero-shade linear both;
+      animation-timeline: --hero;
+      animation-range: exit 0% exit 100%;
+    }
+
+    .ribbon-thread {
+      animation: grow-y linear both;
+      animation-timeline: view();
+      animation-range: cover 20% cover 80%;
+    }
+
+    .step-knot-fill {
+      animation: fade-in linear both;
+      animation-timeline: --step-row;
+      animation-range: cover 40% cover 50%;
+    }
+  }
+
+  /* How-it-works steps: the old unit leaves (150ms), then the new one arrives
+     (from 100ms, 250ms). They never both read at once. */
+  .step-exit {
+    visibility: visible;
+    animation: step-out 150ms linear both;
+  }
+
+  .step-enter {
+    animation: step-in 250ms cubic-bezier(0.2, 0.7, 0.2, 1) 100ms both;
+  }
+
+  @keyframes step-out {
+    from {
+      opacity: 1;
+      transform: none;
+    }
+    99% {
+      visibility: visible;
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-12px);
+      visibility: hidden;
+    }
+  }
+
+  @keyframes step-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes condense {
+    to {
+      transform: scale(0.86);
+    }
+  }
+
+  @keyframes grow-x {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @keyframes grow-y {
+    from {
+      transform: scaleY(0);
+    }
+    to {
+      transform: scaleY(1);
+    }
+  }
+
+  @keyframes hero-drift {
+    to {
+      transform: translateY(16px);
+    }
+  }
+
+  @keyframes hero-lift {
+    to {
+      opacity: 0.92;
+      transform: translateY(-18px);
+    }
+  }
+
+  @keyframes hero-shade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 0.08;
     }
   }
 }

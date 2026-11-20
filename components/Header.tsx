@@ -8,12 +8,13 @@ const navLink = `${navBase} text-surface`;
 
 export function Header({ signedIn }: { signedIn: boolean }) {
   return (
-    <header className="relative z-10 text-surface">
+    <header className="sticky top-0 z-30 text-surface">
+      <div aria-hidden="true" className="header-bg" />
       <div aria-hidden="true" className="ribbon-edge" />
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-1 px-4 py-3 sm:px-6">
+      <div className="relative mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-1 px-4 py-3 sm:px-6">
         <Link
           href={signedIn ? "/dashboard" : "/"}
-          className="-ml-1 inline-flex min-h-11 items-center px-1 font-serif text-[1.65rem] leading-none tracking-[-0.01em] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          className="header-mark -ml-1 inline-flex min-h-11 items-center px-1 font-serif text-[1.65rem] leading-none tracking-[-0.01em] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
           {SITE_NAME}
         </Link>
@@ -38,6 +39,8 @@ export function Header({ signedIn }: { signedIn: boolean }) {
           </nav>
         ) : null}
       </div>
+      <div aria-hidden="true" className="header-rule" />
+      <div aria-hidden="true" className="scroll-progress" />
     </header>
   );
 }

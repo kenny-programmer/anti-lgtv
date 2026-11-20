@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { GiftTag } from "@/components/GiftTag";
+import { HangingTag } from "@/components/HangingTag";
 import { buttonSecondary } from "@/components/ui";
 
 export function InviteShare({ code }: { code: string }) {
@@ -21,15 +22,34 @@ export function InviteShare({ code }: { code: string }) {
   return (
     // `contents` lets the section above place the tag first and the buttons last.
     <div className="contents">
-      <GiftTag
-        label="Invite code"
+      <HangingTag
         stringLength={64}
+        tagDrop={90}
+        gain={0.4}
+        breeze={0.4}
         className="order-first mb-10 w-[19rem] max-w-full"
       >
-        <p className="whitespace-nowrap font-mono text-[1.9rem] font-medium leading-tight tracking-[0.1em]">
-          {code}
-        </p>
-      </GiftTag>
+        <div
+          key={copied === "code" ? "copied" : "idle"}
+          className={copied === "code" ? "tick-tag" : ""}
+        >
+          <GiftTag label="Invite code" stringLength={0}>
+            <p className="whitespace-nowrap font-mono text-[1.9rem] font-medium leading-tight tracking-[0.1em]">
+              {code}
+            </p>
+          </GiftTag>
+        </div>
+        {/* The tag itself copies the code too. */}
+        <button
+          type="button"
+          onClick={() => copy("code")}
+          aria-label={`Copy invite code ${code}`}
+          className="absolute inset-0 cursor-copy focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+        />
+      </HangingTag>
+      <p className="sr-only" aria-live="polite">
+        {copied ? "Copied" : ""}
+      </p>
       <div className="order-last mt-7 flex flex-wrap gap-3">
         <button
           type="button"

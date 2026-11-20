@@ -17,5 +17,19 @@ export function Countdown({ to }: { to: string }) {
   }, []);
 
   if (now === null) return null;
-  return <span>{formatCountdown(new Date(to).getTime() - now)}</span>;
+  const text = formatCountdown(new Date(to).getTime() - now);
+  // Each character sits in its own window; when one changes it rolls in.
+  // Screen readers get the plain text once (no live region, so no chatter).
+  return (
+    <span>
+      <span className="sr-only">{text}</span>
+      <span aria-hidden="true">
+        {text.split("").map((char, index) => (
+          <span key={index} className="roll-window">
+            <span key={char}>{char === " " ? "\u00a0" : char}</span>
+          </span>
+        ))}
+      </span>
+    </span>
+  );
 }

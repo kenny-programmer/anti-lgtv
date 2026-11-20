@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { joinGroupAction } from "@/app/groups/join/actions";
+import { FormAlert } from "@/components/FormAlert";
 import { buttonPrimary, inputClass } from "@/components/ui";
 import type { FormState } from "@/lib/form-state";
 
@@ -53,9 +54,9 @@ export function JoinGroupForm({ initialCode }: { initialCode: string }) {
         </p>
       </div>
       {state.error ? (
-        <p role="alert" className="text-sm font-medium text-accent">
+        <FormAlert trigger={state} className="text-sm font-medium text-accent">
           {state.error}
-        </p>
+        </FormAlert>
       ) : null}
       <button type="submit" disabled={pending} className={`${buttonPrimary} w-full sm:w-auto`}>
         {pending ? "Joining..." : "Join group"}

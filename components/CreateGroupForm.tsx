@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { createGroupAction } from "@/app/groups/new/actions";
 import { DeadlineInput } from "@/components/DeadlineInput";
+import { FormAlert } from "@/components/FormAlert";
 import { buttonPrimary, inputClass } from "@/components/ui";
 import type { FormState } from "@/lib/form-state";
 
@@ -65,9 +66,9 @@ export function CreateGroupForm() {
         </p>
       </div>
       {state.error ? (
-        <p role="alert" className="text-sm font-medium text-accent">
+        <FormAlert trigger={state} className="text-sm font-medium text-accent">
           {state.error}
-        </p>
+        </FormAlert>
       ) : null}
       <button type="submit" disabled={pending} className={`${buttonPrimary} w-full sm:w-auto`}>
         {pending ? "Creating..." : "Create group"}

@@ -5,6 +5,7 @@ import { InviteShare } from "@/components/InviteShare";
 import { LocalTime } from "@/components/LocalTime";
 import { RaffleButton } from "@/components/RaffleButton";
 import { RevealCard } from "@/components/RevealCard";
+import { ScrollOnArrival } from "@/components/ScrollOnArrival";
 import { StatusBadge } from "@/components/StatusBadge";
 import { buttonSecondary, monoLabel } from "@/components/ui";
 import { MIN_MEMBERS, getGroupStatus } from "@/lib/group-status";
@@ -54,7 +55,7 @@ export function GroupPageView({ group, now }: { group: GroupView; now: Date }) {
 
         <div className="mx-auto grid max-w-6xl gap-x-16 gap-y-16 px-4 sm:px-6 lg:grid-cols-12">
           {/* The thing to do now: invite, draw or reveal. First in reading order. */}
-          <div className="lg:col-span-5 lg:col-start-8 lg:row-start-1">
+          <div className="self-start lg:sticky lg:top-24 lg:col-span-5 lg:col-start-8 lg:row-start-1">
             {status === "open" ? (
               <section aria-labelledby="invite-title" className="flex flex-col items-start">
                 <h2 id="invite-title" className={panelTitle}>
@@ -105,13 +106,15 @@ export function GroupPageView({ group, now }: { group: GroupView; now: Date }) {
 
             {status === "raffled" ? (
               group.myMatch ? (
-                <RevealCard
-                  groupId={group.id}
-                  decoys={group.members
-                    .filter((member) => member.id !== group.me.membershipId)
-                    .map((member) => member.displayName)}
-                  revealedName={group.myMatch.receiverName}
-                />
+                <ScrollOnArrival id={group.id}>
+                  <RevealCard
+                    groupId={group.id}
+                    decoys={group.members
+                      .filter((member) => member.id !== group.me.membershipId)
+                      .map((member) => member.displayName)}
+                    revealedName={group.myMatch.receiverName}
+                  />
+                </ScrollOnArrival>
               ) : (
                 <section className="pt-12 lg:pt-16">
                   <h2 className={panelTitle}>The names have been drawn</h2>

@@ -3,6 +3,7 @@ import { GiftTag } from "@/components/GiftTag";
 import { Header } from "@/components/Header";
 import { LocalTime } from "@/components/LocalTime";
 import { StatusBadge } from "@/components/StatusBadge";
+import { HangingTag } from "@/components/HangingTag";
 import { buttonPrimary, monoLabel, textLink } from "@/components/ui";
 import { getGroupStatus } from "@/lib/group-status";
 import type { GroupSummary } from "@/lib/groups";
@@ -36,18 +37,25 @@ export function DashboardView({ groups, now }: { groups: GroupSummary[]; now: Da
           {groups.length === 0 ? (
             <div className="grid gap-x-16 gap-y-10 lg:grid-cols-12">
               <div className="lg:col-span-5 lg:col-start-8 lg:row-start-1">
-                <GiftTag
+                <HangingTag
                   stringLength={64}
+                  tagDrop={110}
+                  gain={0.4}
+                  breeze={0.4}
                   className="w-[18rem] max-w-full"
-                  footer={
-                    <div className="flex items-baseline justify-between gap-3">
-                      <span className={monoLabel}>From:</span>
-                      <span className="font-serif text-2xl italic">You</span>
-                    </div>
-                  }
                 >
-                  <p className="font-serif text-[2.25rem] leading-[1.05]">Whoever you draw</p>
-                </GiftTag>
+                  <GiftTag
+                    stringLength={0}
+                    footer={
+                      <div className="flex items-baseline justify-between gap-3">
+                        <span className={monoLabel}>From:</span>
+                        <span className="font-serif text-2xl italic">You</span>
+                      </div>
+                    }
+                  >
+                    <p className="font-serif text-[2.25rem] leading-[1.05]">Whoever you draw</p>
+                  </GiftTag>
+                </HangingTag>
               </div>
               <div className="lg:col-span-6 lg:row-start-1 lg:pt-32">
                 <h2 className="font-serif text-[2rem] leading-tight tracking-[-0.01em]">
