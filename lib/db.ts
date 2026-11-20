@@ -29,16 +29,24 @@ export class Rollback<T> extends Error {
 
 export async function withTransaction<T>(db: Db, fn: (q: TxQuery) => Promise<T>): Promise<T> {
   const client = await db.pool.connect();
+  // A client whose ROLLBACK failed may still be inside an aborted transaction, so it must be destroyed rather than returned to the pool.
+  let destroyClient = false;
   try {
     await client.query("BEGIN");
     const result = await fn(async (text, params = []) => (await client.query(text, params)).rows);
     await client.query("COMMIT");
     return result;
   } catch (error) {
-    await client.query("ROLLBACK");
+    try {
+      await client.query("ROLLBACK");
+    } catch (rollbackError) {
+      destroyClient = true;
+      // A Rollback sentinel promises a clean rollback, so a failed ROLLBACK must surface instead; any other original error stays the primary failure.
+      throw error instanceof Rollback ? rollbackError : error;
+    }
     if (error instanceof Rollback) return error.value as T;
     throw error;
   } finally {
-    client.release();
+    client.release(destroyClient);
   }
 }
