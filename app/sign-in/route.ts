@@ -1,6 +1,7 @@
 import { getSignInUrl } from "@workos-inc/authkit-nextjs";
 import { redirect } from "next/navigation";
+import { toGoogleSignInUrl } from "@/lib/sign-in-url";
 
 export const GET = async () => {
-  redirect(await getSignInUrl());
+  redirect(toGoogleSignInUrl(await getSignInUrl()));
 };

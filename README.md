@@ -60,7 +60,10 @@ npm run lint
 ## WorkOS setup (one time)
 
 1. Create an account at https://dashboard.workos.com and open the **Staging** environment.
-2. Authentication: enable **Google OAuth**; disable Email + Password and any other method.
+2. Authentication: enable **Google OAuth**; disable Email + Password and any other method. The
+   "Sign in with Google" button sends people straight to Google (`provider=GoogleOAuth`, see
+   `lib/sign-in-url.ts`), so they never see WorkOS's hosted `*.authkit.app` sign-in page. Google
+   OAuth must be enabled in WorkOS or the sign-in request fails.
 3. Redirects: Redirect URI `http://localhost:8888/callback`, Initiate login URI
    `http://localhost:8888/sign-in`, Sign-out redirect `http://localhost:8888/`.
 4. Put `WORKOS_CLIENT_ID`, `WORKOS_API_KEY`, `WORKOS_COOKIE_PASSWORD` (`openssl rand -base64 32`)
