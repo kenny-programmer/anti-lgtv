@@ -1,15 +1,38 @@
 @import "tailwindcss";
 
+/*
+  Gift Raffle: stationery palette.
+  Paper, evergreen ink, one ribbon red, kraft for the tag. No gradients, no
+  shadows: hairlines, flat colour and type do the work.
+*/
 :root {
-  --background: #fbf7f0;
-  --foreground: #1d2b25;
-  --muted: #5d6b64;
-  --card: #ffffff;
-  --border: #e7dfd0;
-  --primary: #1f5c45;
-  --primary-hover: #17493a;
-  --accent: #b83a2a;
-  --accent-soft: #fbe9e4;
+  color-scheme: light;
+
+  --paper: #f5f0e6;
+  --ink: #0f231b;
+  --kraft: #be9266;
+  --ribbon: #cc3021;
+  --leaf: #2f6b3f;
+  --cream: #fbf8f2;
+  --stamp: #8c180d;
+
+  /* Semantic tokens (names kept from the first theme). */
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --muted: #56615a;
+  --card: var(--cream);
+  --border: #d8cfbd;
+  --primary: var(--ribbon);
+  --primary-hover: #a82518;
+  --accent: var(--ribbon);
+  --accent-soft: #f1ddd3;
+
+  /* Surface-aware values, flipped by .surface-ink. */
+  --surface-fg: var(--ink);
+  --surface-muted: var(--muted);
+  --surface-rule: rgb(15 35 27 / 0.16);
+  --ring: var(--ink);
+  --twine: #fffdf8;
 }
 
 @theme inline {
@@ -22,36 +45,231 @@
   --color-primary-hover: var(--primary-hover);
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-kraft: var(--kraft);
+  --color-ribbon: var(--ribbon);
+  --color-leaf: var(--leaf);
+  --color-cream: var(--cream);
+  --color-stamp: var(--stamp);
+  --color-ring: var(--ring);
+  --color-rule: var(--surface-rule);
+  --color-surface: var(--surface-fg);
+  --color-surface-muted: var(--surface-muted);
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-display), ui-serif, Georgia, serif;
+  --font-mono: var(--font-code), ui-monospace, Menlo, monospace;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.55;
 }
 
-@keyframes pop {
-  0% {
-    transform: scale(0.85);
-    opacity: 0;
-  }
-  60% {
-    transform: scale(1.06);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1);
-  }
+::selection {
+  background: var(--ribbon);
+  color: var(--cream);
 }
 
-.animate-pop {
-  animation: pop 450ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+/* Dark evergreen surface (landing hero). */
+.surface-ink {
+  --surface-fg: var(--paper);
+  --surface-muted: #b7c2b4;
+  --surface-rule: rgb(245 240 230 / 0.18);
+  --ring: var(--paper);
+  --twine: var(--cream);
+  background-color: var(--ink);
+  color: var(--paper);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .animate-pop {
-    animation: none;
+/* Tone-on-tone wrapping paper: a half-drop dot, about 8% cream on evergreen. */
+.wrapping-dots {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Cg fill='%23f5f0e6' fill-opacity='0.08'%3E%3Ccircle cx='3' cy='3' r='1.6'/%3E%3Ccircle cx='14' cy='14' r='1.6'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 22px 22px;
+}
+
+/* The ribbon: solid red with one thin cream line through it. */
+.ribbon-edge {
+  position: relative;
+  height: 12px;
+  background: var(--ribbon);
+}
+
+.ribbon-edge::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 5px;
+  height: 1px;
+  background: var(--cream);
+  opacity: 0.85;
+}
+
+/* Wide ribbon band: two cream stitch lines near the edges. */
+.ribbon-band {
+  position: absolute;
+  background: var(--ribbon);
+}
+
+.ribbon-band::before,
+.ribbon-band::after {
+  content: "";
+  position: absolute;
+  background: var(--cream);
+  opacity: 0.8;
+}
+
+.ribbon-band[data-axis="y"]::before,
+.ribbon-band[data-axis="y"]::after {
+  top: 0;
+  bottom: 0;
+  width: 1px;
+}
+
+.ribbon-band[data-axis="y"]::before {
+  left: 7px;
+}
+
+.ribbon-band[data-axis="y"]::after {
+  right: 7px;
+}
+
+.ribbon-band[data-axis="x"]::before,
+.ribbon-band[data-axis="x"]::after {
+  left: 0;
+  right: 0;
+  height: 1px;
+}
+
+.ribbon-band[data-axis="x"]::before {
+  top: 7px;
+}
+
+.ribbon-band[data-axis="x"]::after {
+  bottom: 7px;
+}
+
+/* Gift tag: die-cut kraft luggage tag with a punched hole. */
+.gift-tag {
+  position: relative;
+  --tag-cut: 34px;
+  --tag-hole-y: 30px;
+}
+
+.gift-tag-body {
+  position: relative;
+  background: var(--kraft);
+  color: var(--ink);
+  clip-path: polygon(
+    var(--tag-cut) 0,
+    calc(100% - var(--tag-cut)) 0,
+    100% var(--tag-cut),
+    100% 100%,
+    0 100%,
+    0 var(--tag-cut)
+  );
+  transform: rotate(-2deg);
+  transform-origin: 50% var(--tag-hole-y);
+}
+
+/* The hole is a real hole: whatever is behind the tag shows through. */
+.gift-tag-body {
+  -webkit-mask-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ccircle cx='8' cy='8' r='8'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4'/%3E%3C/svg%3E");
+  mask-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Ccircle cx='8' cy='8' r='8'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4'/%3E%3C/svg%3E");
+  -webkit-mask-size: 16px 16px, 100% 100%;
+  mask-size: 16px 16px, 100% 100%;
+  -webkit-mask-position: 50% calc(var(--tag-hole-y) - 8px), 0 0;
+  mask-position: 50% calc(var(--tag-hole-y) - 8px), 0 0;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* Reinforcement ring around the hole. */
+.gift-tag-ring {
+  position: absolute;
+  left: 50%;
+  top: var(--tag-hole-y);
+  width: 30px;
+  height: 30px;
+  margin: -15px 0 0 -15px;
+  border-radius: 9999px;
+  border: 7px solid #cfa87e;
+}
+
+/* Baker's twine: a loop from the hole up to wherever the tag is tied. */
+.gift-tag-string {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% - var(--tag-hole-y));
+  width: 18px;
+  margin-left: -9px;
+  overflow: visible;
+}
+
+/* Rubber stamp on a drawn tag. */
+.stamp {
+  display: inline-block;
+  border: 2px solid var(--stamp);
+  color: var(--stamp);
+  transform: rotate(-9deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rise {
+    animation: rise 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .tag-settle .gift-tag-body {
+    animation: tag-settle 400ms cubic-bezier(0.3, 0.8, 0.3, 1) both;
+  }
+
+  @keyframes tag-settle {
+    from {
+      transform: translateY(-6px) rotate(-6deg);
+    }
+    to {
+      transform: rotate(-2deg);
+    }
+  }
+
+  .stamp-in {
+    animation: stamp-in 250ms cubic-bezier(0.3, 0.7, 0.4, 1) 300ms both;
+  }
+
+  @keyframes stamp-in {
+    from {
+      opacity: 0;
+      transform: rotate(-9deg) scale(1.3);
+    }
+    to {
+      opacity: 1;
+      transform: rotate(-9deg) scale(1);
+    }
+  }
+
+  .transition-quick {
+    transition-property: color, background-color, border-color, transform;
+    transition-duration: 150ms;
+    transition-timing-function: ease-out;
   }
 }

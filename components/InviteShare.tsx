@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { GiftTag } from "@/components/GiftTag";
 import { buttonSecondary } from "@/components/ui";
 
 export function InviteShare({ code }: { code: string }) {
@@ -18,9 +19,18 @@ export function InviteShare({ code }: { code: string }) {
   }
 
   return (
-    <div>
-      <p className="font-mono text-3xl font-bold tracking-widest text-primary">{code}</p>
-      <div className="mt-3 flex flex-wrap gap-2">
+    // `contents` lets the section above place the tag first and the buttons last.
+    <div className="contents">
+      <GiftTag
+        label="Invite code"
+        stringLength={64}
+        className="order-first mb-10 w-[19rem] max-w-full"
+      >
+        <p className="whitespace-nowrap font-mono text-[1.9rem] font-medium leading-tight tracking-[0.1em]">
+          {code}
+        </p>
+      </GiftTag>
+      <div className="order-last mt-7 flex flex-wrap gap-3">
         <button type="button" onClick={() => copy("code")} className={buttonSecondary}>
           {copied === "code" ? "Copied" : "Copy code"}
         </button>

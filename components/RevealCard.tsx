@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { revealMatchAction } from "@/app/groups/[groupId]/actions";
-import { buttonPrimary, cardClass } from "@/components/ui";
+import { GiftTag } from "@/components/GiftTag";
+import { buttonPrimary, monoLabel } from "@/components/ui";
 import { buildRevealSequence } from "@/lib/reveal-sequence";
 
 type Phase = "idle" | "loading" | "rolling" | "done";
@@ -59,18 +60,26 @@ export function RevealCard({
   const waiting = phase === "idle" || phase === "loading";
 
   return (
-    <section className={`${cardClass} text-center`}>
+    <section>
       {waiting ? (
         <>
-          <p className="text-sm font-semibold uppercase tracking-wide text-muted">
-            The names are drawn
-          </p>
-          <h2 className="mt-2 text-2xl font-bold">Ready to find out who you are gifting?</h2>
+          <GiftTag stringLength={64} className="w-[19rem] max-w-full">
+            <div className="min-h-[6.5rem]">
+              <div className="flex h-[3.25rem] items-end bg-ink px-3 pb-2.5">
+                <span className={`${monoLabel} text-paper`}>Hidden until you open it</span>
+              </div>
+            </div>
+            <div className="h-10" />
+          </GiftTag>
+          <p className={`${monoLabel} mt-10 text-muted`}>The names are drawn</p>
+          <h2 className="mt-3 max-w-[18ch] font-serif text-[2rem] leading-tight tracking-[-0.01em]">
+            Ready to find out who you are gifting?
+          </h2>
           <button
             type="button"
             onClick={reveal}
             disabled={phase === "loading"}
-            className={`${buttonPrimary} mt-6 px-8 py-3 text-base`}
+            className={`${buttonPrimary} mt-6`}
           >
             {phase === "loading" ? "Shuffling..." : "Reveal my match"}
           </button>
@@ -82,23 +91,33 @@ export function RevealCard({
         </>
       ) : (
         <>
-          {/* Purely visual: the rolling names must not be announced, and the final
-              name is announced once by the status element below. */}
-          <div aria-hidden="true">
-            <p className="text-sm font-semibold uppercase tracking-wide text-muted">
-              {phase === "done" ? "You are gifting" : "Drawing..."}
-            </p>
-            <p
-              key={phase}
-              className={`mt-3 break-words text-5xl font-extrabold tracking-tight ${
-                phase === "done" ? "animate-pop text-primary" : "text-foreground/60"
-              }`}
-            >
-              {shown}
-            </p>
-          </div>
+          <GiftTag
+            label={null}
+            stringLength={64}
+            className={`w-[19rem] max-w-full ${phase === "done" ? "tag-settle" : ""}`}
+          >
+            {/* Purely visual: the rolling names must not be announced, and the final
+                name is announced once by the status element below. */}
+            <div aria-hidden="true">
+              <p className={monoLabel}>{phase === "done" ? "You are gifting" : "Drawing..."}</p>
+              <p
+                key={phase}
+                className={`mt-2 min-h-[6.5rem] break-words font-serif text-[2.9rem] leading-[1.02] tracking-[-0.01em] ${
+                  phase === "done" ? "text-ink" : "text-ink/70"
+                }`}
+              >
+                {shown}
+              </p>
+              <div className="h-10" />
+              {phase === "done" ? (
+                <span className="stamp stamp-in absolute bottom-5 right-5 px-2 py-0.5 font-mono text-2xl font-medium uppercase leading-tight tracking-[0.06em]">
+                  Drawn
+                </span>
+              ) : null}
+            </div>
+          </GiftTag>
           {phase === "done" ? (
-            <p className="mt-4 text-sm text-muted">Keep it secret. Only you can see this.</p>
+            <p className="mt-8 text-muted">Keep it secret. Only you can see this.</p>
           ) : null}
         </>
       )}

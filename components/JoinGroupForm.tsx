@@ -11,9 +11,12 @@ export function JoinGroupForm({ initialCode }: { initialCode: string }) {
   const [state, formAction, pending] = useActionState(joinGroupAction, initialState);
 
   return (
-    <form action={formAction} className="space-y-5">
+    <form action={formAction} className="space-y-7">
       <div>
-        <label htmlFor="inviteCode" className="block text-sm font-semibold">
+        <label
+          htmlFor="inviteCode"
+          className="block font-mono text-xs font-medium uppercase tracking-[0.08em]"
+        >
           Invite code
         </label>
         <input
@@ -26,11 +29,14 @@ export function JoinGroupForm({ initialCode }: { initialCode: string }) {
           autoComplete="off"
           spellCheck={false}
           placeholder="ABCD-1234"
-          className={`${inputClass} mt-1 font-mono uppercase tracking-widest`}
+          className={`${inputClass} mt-2 font-mono uppercase tracking-[0.12em]`}
         />
       </div>
       <div>
-        <label htmlFor="displayName" className="block text-sm font-semibold">
+        <label
+          htmlFor="displayName"
+          className="block font-mono text-xs font-medium uppercase tracking-[0.08em]"
+        >
           Your name in this group
         </label>
         <input
@@ -40,9 +46,9 @@ export function JoinGroupForm({ initialCode }: { initialCode: string }) {
           maxLength={40}
           defaultValue={state.values?.displayName ?? ""}
           placeholder="What should everyone call you?"
-          className={`${inputClass} mt-1`}
+          className={`${inputClass} mt-2`}
         />
-        <p className="mt-1 text-sm text-muted">
+        <p className="mt-2 text-sm text-muted">
           This is what the group sees. We never show your Google name.
         </p>
       </div>
@@ -51,7 +57,7 @@ export function JoinGroupForm({ initialCode }: { initialCode: string }) {
           {state.error}
         </p>
       ) : null}
-      <button type="submit" disabled={pending} className={buttonPrimary}>
+      <button type="submit" disabled={pending} className={`${buttonPrimary} w-full sm:w-auto`}>
         {pending ? "Joining..." : "Join group"}
       </button>
     </form>

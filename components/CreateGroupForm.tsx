@@ -12,9 +12,12 @@ export function CreateGroupForm() {
   const [state, formAction, pending] = useActionState(createGroupAction, initialState);
 
   return (
-    <form action={formAction} className="space-y-5">
+    <form action={formAction} className="space-y-7">
       <div>
-        <label htmlFor="name" className="block text-sm font-semibold">
+        <label
+          htmlFor="name"
+          className="block font-mono text-xs font-medium uppercase tracking-[0.08em]"
+        >
           Group name
         </label>
         <input
@@ -24,11 +27,14 @@ export function CreateGroupForm() {
           maxLength={80}
           defaultValue={state.values?.name ?? ""}
           placeholder="Office gift exchange"
-          className={`${inputClass} mt-1`}
+          className={`${inputClass} mt-2`}
         />
       </div>
       <div>
-        <label htmlFor="displayName" className="block text-sm font-semibold">
+        <label
+          htmlFor="displayName"
+          className="block font-mono text-xs font-medium uppercase tracking-[0.08em]"
+        >
           Your name in this group
         </label>
         <input
@@ -38,20 +44,23 @@ export function CreateGroupForm() {
           maxLength={40}
           defaultValue={state.values?.displayName ?? ""}
           placeholder="What should everyone call you?"
-          className={`${inputClass} mt-1`}
+          className={`${inputClass} mt-2`}
         />
-        <p className="mt-1 text-sm text-muted">
+        <p className="mt-2 text-sm text-muted">
           This is what the group sees. We never show your Google name.
         </p>
       </div>
       <div>
-        <label htmlFor="signupDeadline" className="block text-sm font-semibold">
+        <label
+          htmlFor="signupDeadline"
+          className="block font-mono text-xs font-medium uppercase tracking-[0.08em]"
+        >
           Last day to sign up
         </label>
-        <div className="mt-1">
+        <div className="mt-2">
           <DeadlineInput id="signupDeadline" name="signupDeadline" />
         </div>
-        <p className="mt-1 text-sm text-muted">
+        <p className="mt-2 text-sm text-muted">
           Signups close at this time, and you can run the raffle once it has passed.
         </p>
       </div>
@@ -60,7 +69,7 @@ export function CreateGroupForm() {
           {state.error}
         </p>
       ) : null}
-      <button type="submit" disabled={pending} className={buttonPrimary}>
+      <button type="submit" disabled={pending} className={`${buttonPrimary} w-full sm:w-auto`}>
         {pending ? "Creating..." : "Create group"}
       </button>
     </form>

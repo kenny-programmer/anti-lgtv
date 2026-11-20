@@ -23,7 +23,7 @@ export function RaffleButton({ groupId, memberCount }: { groupId: string; member
         {pending ? "Drawing names..." : "Run the raffle"}
       </button>
       {state.error ? (
-        <p role="alert" className="mt-2 text-sm font-medium text-accent">
+        <p role="alert" className="mt-3 text-sm font-medium text-accent">
           {state.error}
         </p>
       ) : null}
