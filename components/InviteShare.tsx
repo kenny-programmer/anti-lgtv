@@ -5,17 +5,43 @@ import { GiftTag } from "@/components/GiftTag";
 import { HangingTag } from "@/components/HangingTag";
 import { buttonSecondary } from "@/components/ui";
 
+// The async clipboard API needs a secure context and a permission some browsers withhold; the
+// textarea route works without either.
+async function copyText(text: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    const field = document.createElement("textarea");
+    field.value = text;
+    field.setAttribute("readonly", "");
+    field.style.position = "fixed";
+    field.style.opacity = "0";
+    document.body.appendChild(field);
+    field.select();
+    try {
+      return document.execCommand("copy");
+    } catch {
+      return false;
+    } finally {
+      document.body.removeChild(field);
+    }
+  }
+}
+
 export function InviteShare({ code }: { code: string }) {
   const [copied, setCopied] = useState<"code" | "link" | null>(null);
+  const [failed, setFailed] = useState(false);
 
   async function copy(kind: "code" | "link") {
     const text = kind === "code" ? code : `${window.location.origin}/groups/join?code=${code}`;
-    try {
-      await navigator.clipboard.writeText(text);
+    setFailed(false);
+    if (await copyText(text)) {
       setCopied(kind);
       window.setTimeout(() => setCopied(null), 2000);
-    } catch {
+    } else {
       setCopied(null);
+      setFailed(true);
     }
   }
 
@@ -48,7 +74,7 @@ export function InviteShare({ code }: { code: string }) {
         />
       </HangingTag>
       <p className="sr-only" aria-live="polite">
-        {copied ? "Copied" : ""}
+        {copied ? "Copied" : failed ? "Could not copy. Select the code and copy it by hand." : ""}
       </p>
       <div className="order-last mt-7 flex flex-wrap gap-3">
         <button
@@ -65,6 +91,11 @@ export function InviteShare({ code }: { code: string }) {
         >
           {copied === "link" ? "Copied" : "Copy invite link"}
         </button>
+        {failed ? (
+          <p className="basis-full text-sm text-accent" role="alert">
+            Could not copy. Select the code and copy it by hand.
+          </p>
+        ) : null}
       </div>
     </div>
   );
