@@ -130,6 +130,21 @@ html {
   display: none;
 }
 
+/* On short desktop screens the hero tag (not the ribbon) scales down about its
+   top centre, so it still fits the first screen and stays on the ribbon line. */
+@media (min-width: 1024px) and (max-height: 760px) {
+  .hero-tag-fit {
+    scale: 0.88;
+    transform-origin: 50% 0;
+  }
+}
+
+@media (min-width: 1024px) and (max-height: 680px) {
+  .hero-tag-fit {
+    scale: 0.76;
+  }
+}
+
 /* Tone-on-tone wrapping paper: a half-drop dot, about 8% cream on evergreen. */
 .wrapping-dots {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Cg fill='%23f5f0e6' fill-opacity='0.08'%3E%3Ccircle cx='3' cy='3' r='1.6'/%3E%3Ccircle cx='14' cy='14' r='1.6'/%3E%3C/g%3E%3C/svg%3E");

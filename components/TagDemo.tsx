@@ -73,7 +73,6 @@ export function TagDemo() {
         <GiftTag
           stringLength={0}
           className="[--tag-tilt:0deg]"
-          bodyClassName="lg:pb-8 lg:pt-[5.5rem]"
           footer={
             <div className="flex items-baseline justify-between gap-3">
               <span className={monoLabel}>From:</span>
@@ -113,7 +112,7 @@ export function TagDemo() {
                 Drawn
               </span>
             ) : null}
-            <p className="mt-6 max-w-[16rem] text-sm leading-snug lg:mb-10">
+            <p className="mt-5 max-w-[16rem] text-sm leading-snug">
               Demo only. Real draws happen inside your group, and only you see your own tag.
             </p>
           </div>

@@ -11,13 +11,13 @@ import { Twine } from "@/components/Twine";
  */
 export function HeroTag() {
   return (
-    <div className="relative mx-auto w-[17.5rem] sm:w-[19rem] lg:mt-6 lg:w-[20rem]">
+    <div className="relative mx-auto w-[17.5rem] sm:w-[19rem] lg:w-[19rem]">
       <div
         aria-hidden="true"
         className="ribbon-band unroll-y inset-x-0 top-0 -bottom-[40rem] mx-auto w-12 lg:-top-[40rem] lg:w-16"
         data-axis="y"
       />
-      <div className="hero-drift tag-appear relative">
+      <div className="hero-drift hero-tag-fit tag-appear relative">
         <HangingTag stringLength={110} tagDrop={150} entrance>
           <TagDemo />
         </HangingTag>
