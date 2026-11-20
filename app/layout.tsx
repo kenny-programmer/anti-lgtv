@@ -27,7 +27,7 @@ const code = DM_Mono({
 export const metadata: Metadata = {
   title: { default: SITE_NAME, template: `%s | ${SITE_NAME}` },
   description:
-    "Secret Santa for friends, family or the office. Run a private holiday gift exchange: invite-only groups, one fair draw, and everyone opens only their own tag.",
+    "ANTI-LGTV Exchange Gift: run a private holiday gift exchange with an invite code, one fair draw, and everyone opens only their own tag.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

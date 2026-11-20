@@ -7,6 +7,7 @@ import { TAG_NUDGE } from "@/components/HangingTag";
 import { prefersReducedMotion, scrollToCenter } from "@/components/scroll-motion";
 import { monoLabel } from "@/components/ui";
 import { buildRevealSequence } from "@/lib/reveal-sequence";
+import { SITE_NAME } from "@/lib/site";
 
 // Invented sample names for the demo only.
 const SAMPLE_NAMES = ["Maya", "Jonas", "Priya", "Tomas", "Aiko", "Leila", "Sam", "Nadia"];
@@ -76,7 +77,7 @@ export function TagDemo() {
           footer={
             <div className="flex items-baseline justify-between gap-3">
               <span className={monoLabel}>From:</span>
-              <span className="font-serif text-2xl italic">Secret Santa</span>
+              <span className="font-serif text-2xl italic">{SITE_NAME}</span>
             </div>
           }
         >

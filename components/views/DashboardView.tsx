@@ -7,6 +7,7 @@ import { HangingTag } from "@/components/HangingTag";
 import { buttonPrimary, monoLabel, textLink } from "@/components/ui";
 import { getGroupStatus } from "@/lib/group-status";
 import type { GroupSummary } from "@/lib/groups";
+import { PRODUCT_NAME } from "@/lib/site";
 
 export function DashboardView({ groups, now }: { groups: GroupSummary[]; now: Date }) {
   return (
@@ -15,7 +16,7 @@ export function DashboardView({ groups, now }: { groups: GroupSummary[]; now: Da
       <main className="page-enter pb-24">
         <div className="mx-auto flex max-w-6xl flex-wrap items-end justify-between gap-x-10 gap-y-6 px-4 pb-10 pt-10 sm:px-6 lg:pt-16">
           <div>
-            <p className={`${monoLabel} text-muted`}>Secret Santa</p>
+            <p className={`${monoLabel} text-muted`}>{PRODUCT_NAME}</p>
             <h1 className="mt-3 font-serif text-[clamp(2.75rem,6vw,4.5rem)] leading-none tracking-[-0.02em]">
               Your groups
             </h1>

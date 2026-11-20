@@ -1,6 +1,6 @@
-# Gift Raffle
+# ANTI-LGTV Exchange Gift
 
-A public web app for running private Secret-Santa style gift exchanges. People sign in with
+A public web app for running private holiday gift exchanges (ANTI-LGTV Exchange Gift). People sign in with
 Google (via WorkOS), create or join invite-code groups, and after the signup deadline the group
 organizer runs a one-time raffle. Each member then reveals who they are gifting. Nobody gets
 themselves, and nobody is picked twice.

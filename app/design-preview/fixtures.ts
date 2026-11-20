@@ -109,7 +109,7 @@ export function dashboardFixture(now: Date): GroupSummary[] {
     },
     {
       id: "5e2a9d14-7c3b-4f60-b8a1-2d9e4c7f1a02",
-      name: "Studio 4B Secret Santa",
+      name: "Studio 4B Exchange Gift",
       signupDeadline: new Date(now.getTime() - 2 * HOUR),
       raffledAt: null,
       memberCount: 11,

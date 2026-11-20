@@ -5,7 +5,7 @@ import { HeroTag } from "@/components/HeroTag";
 import { HowItWorks } from "@/components/HowItWorks";
 import { ScrollLink } from "@/components/ScrollLink";
 import { buttonPrimary, monoLabel, textLink } from "@/components/ui";
-import { SITE_NAME } from "@/lib/site";
+import { PRODUCT_NAME, SITE_NAME } from "@/lib/site";
 
 const TICKER = [
   "Nobody draws themselves",
@@ -49,16 +49,14 @@ export default async function LandingPage() {
         />
         <section className="relative mx-auto grid max-w-6xl grid-cols-12 gap-x-6 px-4 pb-20 pt-10 sm:px-6 sm:pt-14 lg:pb-28 lg:pt-20">
           <div className="col-span-12 lg:col-span-7">
-            <p className={`${monoLabel} rise text-surface-muted [--d:80ms]`}>
-              Secret Santa <span aria-hidden="true">/</span> Holiday gift exchange
-            </p>
+            <p className={`${monoLabel} rise text-surface-muted [--d:80ms]`}>{PRODUCT_NAME}</p>
             <h1 className="hero-lift mt-6 font-serif text-[clamp(3.5rem,9vw,7rem)] font-normal leading-[0.98] tracking-[-0.02em] text-balance">
               <span className="line-mask">
-                <span className="[--d:150ms]">Secret Santa,</span>
+                <span className="[--d:150ms]">Bunot na.</span>
               </span>{" "}
               <span className="line-mask">
                 <span className="[--d:240ms]">
-                  <em className="italic">without</em> the hat.
+                  Walang <em className="italic">atrasan</em>.
                 </span>
               </span>
             </h1>
@@ -67,7 +65,14 @@ export default async function LandingPage() {
               draws the names once, and everyone opens only their own tag. Nobody draws themselves.
               Nobody is drawn twice.
             </p>
-            <div className="rise mt-10 flex flex-wrap items-center gap-x-7 gap-y-3 [--d:520ms]">
+            <p className="rise mt-6 flex max-w-[36rem] items-baseline gap-4 font-serif text-xl leading-snug italic text-surface [--d:480ms]">
+              <span
+                aria-hidden="true"
+                className="h-px w-8 shrink-0 translate-y-[-0.3em] bg-ribbon"
+              />
+              <span>BAWASE NAMAN ANG PATAS PANAY TRABAHO NALANG</span>
+            </p>
+            <div className="rise mt-10 flex flex-wrap items-center gap-x-7 gap-y-3 [--d:560ms]">
               <a href="/sign-in" className={buttonPrimary}>
                 Sign in with Google
               </a>
@@ -135,7 +140,7 @@ export default async function LandingPage() {
         <div className="reveal-on-scroll mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-8 gap-y-2 px-4 py-6 sm:px-6">
           <p className="font-serif text-xl">{SITE_NAME}</p>
           <p className={`${monoLabel} text-surface-muted`}>
-            Secret Santa for friends, family and the office
+            {PRODUCT_NAME} for friends, family and the office
           </p>
         </div>
       </footer>
