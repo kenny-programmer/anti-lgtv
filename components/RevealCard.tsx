@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { revealMatchAction } from "@/app/groups/[groupId]/actions";
+import { Confetti } from "@/components/Confetti";
 import { GiftTag } from "@/components/GiftTag";
 import { buttonPrimary, monoLabel } from "@/components/ui";
 import { buildRevealSequence } from "@/lib/reveal-sequence";
@@ -58,6 +59,9 @@ export function RevealCard({
   }
 
   const waiting = phase === "idle" || phase === "loading";
+  // Presentation only: celebrate a reveal that happens on this visit, not a
+  // tag that was already open when the page loaded.
+  const celebrate = phase === "done" && revealedName === null;
 
   return (
     <section>
@@ -91,31 +95,40 @@ export function RevealCard({
         </>
       ) : (
         <>
-          <GiftTag
-            label={null}
-            stringLength={64}
-            className={`w-[19rem] max-w-full ${phase === "done" ? "tag-settle" : ""}`}
-          >
-            {/* Purely visual: the rolling names must not be announced, and the final
+          <div className={`relative ${celebrate ? "tag-pendulum" : ""}`}>
+            <GiftTag label={null} stringLength={64} className="w-[19rem] max-w-full">
+              {/* Purely visual: the rolling names must not be announced, and the final
                 name is announced once by the status element below. */}
-            <div aria-hidden="true">
-              <p className={monoLabel}>{phase === "done" ? "You are gifting" : "Drawing..."}</p>
-              <p
-                key={phase}
-                className={`mt-2 min-h-[6.5rem] break-words font-serif text-[2.9rem] leading-[1.02] tracking-[-0.01em] ${
-                  phase === "done" ? "text-ink" : "text-ink/70"
-                }`}
-              >
-                {shown}
-              </p>
-              <div className="h-10" />
-              {phase === "done" ? (
-                <span className="stamp stamp-in absolute bottom-5 right-5 px-2 py-0.5 font-mono text-2xl font-medium uppercase leading-tight tracking-[0.06em]">
-                  Drawn
-                </span>
-              ) : null}
-            </div>
-          </GiftTag>
+              <div aria-hidden="true">
+                <p className={monoLabel}>{phase === "done" ? "You are gifting" : "Drawing..."}</p>
+                <p
+                  key={phase}
+                  className={`mt-2 min-h-[6.5rem] overflow-hidden break-words font-serif text-[2.9rem] leading-[1.02] tracking-[-0.01em] ${
+                    phase === "done" ? "text-ink" : "text-ink/70"
+                  }`}
+                >
+                  {phase === "rolling" ? (
+                    <span key={shown} className="flap">
+                      {shown}
+                    </span>
+                  ) : (
+                    shown
+                  )}
+                </p>
+                <div className="h-10" />
+                {phase === "done" ? (
+                  <span
+                    className={`stamp absolute bottom-5 right-5 px-2 py-0.5 font-mono text-2xl font-medium uppercase leading-tight tracking-[0.06em] ${
+                      celebrate ? "stamp-slam" : ""
+                    }`}
+                  >
+                    Drawn
+                  </span>
+                ) : null}
+              </div>
+            </GiftTag>
+            {celebrate ? <Confetti /> : null}
+          </div>
           {phase === "done" ? (
             <p className="mt-8 text-muted">Keep it secret. Only you can see this.</p>
           ) : null}

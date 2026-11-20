@@ -11,7 +11,7 @@ export function DashboardView({ groups, now }: { groups: GroupSummary[]; now: Da
   return (
     <>
       <Header signedIn />
-      <main className="pb-24">
+      <main className="page-enter pb-24">
         <div className="mx-auto flex max-w-6xl flex-wrap items-end justify-between gap-x-10 gap-y-6 px-4 pb-10 pt-10 sm:px-6 lg:pt-16">
           <div>
             <p className={`${monoLabel} text-muted`}>Secret Santa</p>
@@ -61,8 +61,12 @@ export function DashboardView({ groups, now }: { groups: GroupSummary[]; now: Da
             </div>
           ) : (
             <ul>
-              {groups.map((group) => (
-                <li key={group.id} className="border-b border-rule">
+              {groups.map((group, index) => (
+                <li
+                  key={group.id}
+                  className="stagger-in border-b border-rule"
+                  style={{ "--i": Math.min(index, 7) } as React.CSSProperties}
+                >
                   <Link
                     href={`/groups/${group.id}`}
                     className="group grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-6 gap-y-3 py-7 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring sm:grid-cols-[minmax(0,1fr)_13rem_auto] sm:py-8"

@@ -31,10 +31,18 @@ export function InviteShare({ code }: { code: string }) {
         </p>
       </GiftTag>
       <div className="order-last mt-7 flex flex-wrap gap-3">
-        <button type="button" onClick={() => copy("code")} className={buttonSecondary}>
+        <button
+          type="button"
+          onClick={() => copy("code")}
+          className={`${buttonSecondary} ${copied === "code" ? "tick" : ""}`}
+        >
           {copied === "code" ? "Copied" : "Copy code"}
         </button>
-        <button type="button" onClick={() => copy("link")} className={buttonSecondary}>
+        <button
+          type="button"
+          onClick={() => copy("link")}
+          className={`${buttonSecondary} ${copied === "link" ? "tick" : ""}`}
+        >
           {copied === "link" ? "Copied" : "Copy invite link"}
         </button>
       </div>

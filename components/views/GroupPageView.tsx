@@ -20,7 +20,7 @@ export function GroupPageView({ group, now }: { group: GroupView; now: Date }) {
   return (
     <>
       <Header signedIn />
-      <main className="pb-24">
+      <main className="page-enter pb-24">
         <div className="mx-auto max-w-6xl px-4 pb-10 pt-10 sm:px-6 lg:pb-12 lg:pt-16">
           <StatusBadge status={status} />
           <h1 className="mt-5 max-w-[20ch] font-serif text-[clamp(2.75rem,7vw,5.25rem)] leading-[1] tracking-[-0.02em] text-balance">
@@ -136,7 +136,8 @@ export function GroupPageView({ group, now }: { group: GroupView; now: Date }) {
               {group.members.map((member, index) => (
                 <li
                   key={member.id}
-                  className="grid grid-cols-[2.75rem_minmax(0,1fr)_auto] items-baseline gap-x-3 border-b border-rule py-3.5"
+                  className="stagger-in grid grid-cols-[2.75rem_minmax(0,1fr)_auto] items-baseline gap-x-3 border-b border-rule py-3.5"
+                  style={{ "--i": Math.min(index, 7) } as React.CSSProperties}
                 >
                   <span aria-hidden="true" className="font-mono text-xs text-muted">
                     {String(index + 1).padStart(2, "0")}
