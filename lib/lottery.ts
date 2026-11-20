@@ -198,7 +198,8 @@ export function lotteryFrame(t: number, pickAt: number | null, chosenIndex: numb
     ? chosenBall(t, line.pick, chosenIndex)
     : { ...balls[chosenIndex % BALL_COUNT], scale: 1 };
   const opened = line ? ease((t - line.open) / OPEN) : 0;
-  const leave = line ? ease((t - line.travel + 0.1) / 0.55) : 0;
+  // The bowl clears out of the way before the tag comes back, so they never mix.
+  const leave = line ? ease((t - line.travel + 0.25) / 0.45) : 0;
 
   return {
     phase,
@@ -221,6 +222,6 @@ export function lotteryFrame(t: number, pickAt: number | null, chosenIndex: numb
       rollsOpacity: line ? 1 - ease((t - line.travel) / (TRAVEL * 0.3)) : 1,
       slipOpacity: line ? 1 - ease((t - line.travel - TRAVEL * 0.7) / (TRAVEL * 0.3)) : 1,
     },
-    tagOpacity: line && t >= line.travel ? ease((t - line.travel) / 0.5) : 1 - enter,
+    tagOpacity: line && t >= line.travel ? ease((t - line.travel - 0.05) / 0.4) : 1 - enter,
   };
 }
