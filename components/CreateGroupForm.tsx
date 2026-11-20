@@ -22,6 +22,7 @@ export function CreateGroupForm() {
           name="name"
           required
           maxLength={80}
+          defaultValue={state.values?.name ?? ""}
           placeholder="Office gift exchange"
           className={`${inputClass} mt-1`}
         />
@@ -35,6 +36,7 @@ export function CreateGroupForm() {
           name="displayName"
           required
           maxLength={40}
+          defaultValue={state.values?.displayName ?? ""}
           placeholder="What should everyone call you?"
           className={`${inputClass} mt-1`}
         />

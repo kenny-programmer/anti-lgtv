@@ -12,14 +12,21 @@ const MESSAGES = {
   deadline_in_past: "Pick a signup deadline in the future.",
 } as const;
 
+function readString(formData: FormData, key: string): string {
+  const value = formData.get(key);
+  return typeof value === "string" ? value : "";
+}
+
 export async function createGroupAction(_prev: FormState, formData: FormData): Promise<FormState> {
   const user = await requireUser();
+  const name = readString(formData, "name");
+  const displayName = readString(formData, "displayName");
   const result = await createGroup(getDb(), {
     userId: user.id,
-    name: String(formData.get("name") ?? ""),
-    displayName: String(formData.get("displayName") ?? ""),
-    signupDeadline: new Date(String(formData.get("signupDeadline") ?? "")),
+    name,
+    displayName,
+    signupDeadline: new Date(readString(formData, "signupDeadline")),
   });
-  if (!result.ok) return { error: MESSAGES[result.error] };
+  if (!result.ok) return { error: MESSAGES[result.error], values: { name, displayName } };
   redirect(`/groups/${result.group.id}`);
 }
