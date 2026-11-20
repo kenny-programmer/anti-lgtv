@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Node >= 22.11.0 (required by `@workos-inc/authkit-nextjs`); set `engines` in `package.json` and `NODE_VERSION = "22"` in `netlify.toml`.
+- Node >= 22.13.0 (the effective floor across `@workos-inc/authkit-nextjs` >=22.11, `@netlify/database` >=22.12 and `netlify-cli` >=22.13); set `engines` in `package.json` and `NODE_VERSION = "22"` in `netlify.toml`.
 - Next.js 16 uses `proxy.ts` with `authkitProxy` (not `middleware.ts`).
 - Database: `@netlify/database` with plain SQL only. No ORM, no Prisma, no Drizzle. Connection string is `NETLIFY_DB_URL`, injected by `netlify dev` / Netlify; never put it in a file.
 - Migrations live only in `netlify/database/migrations/` as `<digits>_<slug>.sql`. Never edit a migration after it has been applied; add a new one.
@@ -110,7 +110,7 @@ Set the `scripts` block to (keep any other scripts the scaffold added):
   "typecheck": "tsc --noEmit",
   "test": "vitest run"
 },
-"engines": { "node": ">=22.11.0" }
+"engines": { "node": ">=22.13.0" }
 ```
 
 - [ ] **Step 4: Create `vitest.config.ts`**
