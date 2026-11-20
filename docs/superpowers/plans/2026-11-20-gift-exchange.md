@@ -2654,7 +2654,7 @@ git commit -m "feat: add join-group flow with shareable invite link"
 
 **Interfaces:**
 - Consumes: `requireUser`, `getDb`, `getGroupForMember`, `getGroupStatus`, `MIN_MEMBERS`, `formatInviteCode`, `Header`, `LocalTime`, `Countdown`, `StatusBadge`, UI constants.
-- Produces: `<InviteShare code: string />` (client) with "Copy code" and "Copy invite link" buttons; the group page at `/groups/[groupId]` (404 for non-members).
+- Produces: `<InviteShare code: string />` (client) where `code` is the already-formatted display code (`XXXX-XXXX`, produced on the server with `formatInviteCode`); it has "Copy code" and "Copy invite link" buttons. It must not import from `@/lib/invite-code` (that module imports `node:crypto`, which must stay out of client bundles). The group page at `/groups/[groupId]` (404 for non-members).
 
 - [ ] **Step 1: Create `components/InviteShare.tsx`**
 
@@ -2663,14 +2663,12 @@ git commit -m "feat: add join-group flow with shareable invite link"
 
 import { useState } from "react";
 import { buttonSecondary } from "@/components/ui";
-import { formatInviteCode } from "@/lib/invite-code";
 
 export function InviteShare({ code }: { code: string }) {
   const [copied, setCopied] = useState<"code" | "link" | null>(null);
-  const display = formatInviteCode(code);
 
   async function copy(kind: "code" | "link") {
-    const text = kind === "code" ? display : `${window.location.origin}/groups/join?code=${display}`;
+    const text = kind === "code" ? code : `${window.location.origin}/groups/join?code=${code}`;
     try {
       await navigator.clipboard.writeText(text);
       setCopied(kind);
@@ -2682,7 +2680,7 @@ export function InviteShare({ code }: { code: string }) {
 
   return (
     <div>
-      <p className="font-mono text-3xl font-bold tracking-widest text-primary">{display}</p>
+      <p className="font-mono text-3xl font-bold tracking-widest text-primary">{code}</p>
       <div className="mt-3 flex flex-wrap gap-2">
         <button type="button" onClick={() => copy("code")} className={buttonSecondary}>
           {copied === "code" ? "Copied" : "Copy code"}
@@ -2709,6 +2707,7 @@ import { cardClass } from "@/components/ui";
 import { getDb } from "@/lib/db";
 import { MIN_MEMBERS, getGroupStatus } from "@/lib/group-status";
 import { getGroupForMember } from "@/lib/groups";
+import { formatInviteCode } from "@/lib/invite-code";
 import { requireUser } from "@/lib/session";
 
 export default async function GroupPage({ params }: { params: Promise<{ groupId: string }> }) {
@@ -2754,7 +2753,7 @@ export default async function GroupPage({ params }: { params: Promise<{ groupId:
             <p className="mb-3 mt-1 text-sm text-muted">
               Share this with the people you want in the exchange. Only people with the code can join.
             </p>
-            <InviteShare code={group.inviteCode} />
+            <InviteShare code={formatInviteCode(group.inviteCode)} />
           </section>
         ) : null}
 
