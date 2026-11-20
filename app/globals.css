@@ -155,6 +155,7 @@ body {
 /* Gift tag: die-cut kraft luggage tag with a punched hole. */
 .gift-tag {
   position: relative;
+  --tag-tilt: -2deg;
   --tag-cut: 34px;
   --tag-hole-y: 30px;
 }
@@ -171,7 +172,7 @@ body {
     0 100%,
     0 var(--tag-cut)
   );
-  transform: rotate(-2deg);
+  transform: rotate(var(--tag-tilt));
   transform-origin: 50% var(--tag-hole-y);
 }
 

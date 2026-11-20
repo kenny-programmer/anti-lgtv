@@ -1,8 +1,7 @@
 import { redirect } from "next/navigation";
 import { withAuth } from "@workos-inc/authkit-nextjs";
-import { GiftTag } from "@/components/GiftTag";
 import { Header } from "@/components/Header";
-import { Twine } from "@/components/Twine";
+import { HeroTag } from "@/components/HeroTag";
 import { buttonPrimary, monoLabel, textLink } from "@/components/ui";
 import { SITE_NAME } from "@/lib/site";
 
@@ -58,40 +57,16 @@ export default async function LandingPage() {
           </div>
 
           <div className="relative col-span-12 mt-16 lg:col-span-5 lg:mt-0">
-            {/* Wide ribbon: vertical on large screens, horizontal on small ones. */}
-            <div
-              aria-hidden="true"
-              className="ribbon-band left-1/2 top-[-60rem] bottom-[-60rem] hidden w-16 -translate-x-1/2 lg:block"
-              data-axis="y"
-            />
+            {/* Small screens: the tag assembly hangs from a horizontal band. */}
             <div
               aria-hidden="true"
               className="ribbon-band -left-[50vw] -right-[50vw] top-0 z-10 h-12 lg:hidden"
               data-axis="x"
             />
-            <div className="rise relative mx-auto w-[17.5rem] [animation-delay:240ms] sm:w-[19rem] lg:mt-6 lg:w-[20rem]">
-              <Twine className="absolute hidden left-1/2 top-[-0.4rem] z-10 w-[5.25rem] -translate-x-1/2 lg:block lg:w-[5.5rem]" />
-              <GiftTag
-                stringLength={110}
-                bodyClassName="lg:pb-8 lg:pt-[5.5rem]"
-                footer={
-                  <div className="flex items-baseline justify-between gap-3">
-                    <span className={monoLabel}>From:</span>
-                    <span className="font-serif text-2xl italic">Secret Santa</span>
-                  </div>
-                }
-              >
-                <div className="mt-3 flex h-16 items-end bg-ink px-3 pb-2.5">
-                  <span className={`${monoLabel} text-paper`}>Hidden until the draw</span>
-                </div>
-                <p className="mt-6 max-w-[16rem] text-sm leading-snug lg:mb-10">
-                  One name per tag. You only ever open your own.
-                </p>
-              </GiftTag>
-            </div>
+            <HeroTag />
           </div>
         </section>
-        <div aria-hidden="true" className="relative hidden h-16 lg:block">
+        <div aria-hidden="true" className="relative h-14 lg:h-16">
           <div className="ribbon-band inset-0" data-axis="x" />
         </div>
       </div>
