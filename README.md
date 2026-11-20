@@ -32,20 +32,15 @@ variables are only read when a request is served.
 npm install
 cp .env.example .env.local              # then fill in the four WorkOS values
 npx netlify database migrations apply   # create the tables in the local database
-npm run build
 npm run dev                             # netlify dev: http://localhost:8888
 ```
 
-`npm run dev` runs `netlify dev`, which serves the app on port 8888 and starts a local
+`npm run dev` runs `netlify dev`, which serves the app on port 8888, runs Next's dev server
+(`next dev`, set in the `[dev]` block of `netlify.toml`) behind it, and starts a local
 Postgres-compatible database (stored in the git-ignored `.netlify/db`). `netlify dev` does **not**
 apply migrations for you: run `npx netlify database migrations apply` once, and again after adding
 a migration (it works whether or not `netlify dev` is running; `npx netlify database status` shows
 what is applied or pending).
-
-Note on `npm run dev`: Netlify's project detection starts the app with `npm run start`
-(`next start`), so it serves the production build. That is why `npm run build` comes first, and you
-need to rebuild after code changes. For a hot-reloading dev server use
-`npx netlify dev --command "next dev" --target-port 3000` instead.
 
 No database account or setup is needed: in production Netlify provisions the database and applies
 `netlify/database/migrations/` on deploy.
@@ -104,7 +99,7 @@ npm run lint
 ## Manual end-to-end check
 
 Needs real WorkOS credentials and two or three different Google accounts (use a private window
-for each extra account). Run `npm run build`, apply migrations, start `npm run dev`, then:
+for each extra account). Apply migrations, start `npm run dev`, then:
 
 1. Visit `http://localhost:8888/` signed out: the landing page shows; "Sign in with Google" goes
    to WorkOS and offers only Google.
