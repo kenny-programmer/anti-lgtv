@@ -4,6 +4,8 @@ import { Countdown } from "@/components/Countdown";
 import { Header } from "@/components/Header";
 import { InviteShare } from "@/components/InviteShare";
 import { LocalTime } from "@/components/LocalTime";
+import { RaffleButton } from "@/components/RaffleButton";
+import { RevealCard } from "@/components/RevealCard";
 import { StatusBadge } from "@/components/StatusBadge";
 import { buttonSecondary, cardClass } from "@/components/ui";
 import { getDb } from "@/lib/db";
@@ -101,12 +103,35 @@ export default async function GroupPage({ params }: { params: Promise<{ groupId:
         {status === "closed" && group.members.length >= MIN_MEMBERS ? (
           <section className={cardClass}>
             <h2 className="text-lg font-bold">Signups are closed</h2>
-            <p className="mt-1 text-muted">
-              {group.isAdmin
-                ? "You can run the raffle once everyone you expect has joined."
-                : "Waiting for the organizer to run the raffle."}
-            </p>
+            {group.isAdmin ? (
+              <>
+                <p className="mb-4 mt-1 text-muted">
+                  Everyone who signed up is listed above. When you are ready, draw the names. This
+                  can only be done once.
+                </p>
+                <RaffleButton groupId={group.id} memberCount={group.members.length} />
+              </>
+            ) : (
+              <p className="mt-1 text-muted">Waiting for the organizer to run the raffle.</p>
+            )}
           </section>
+        ) : null}
+
+        {status === "raffled" ? (
+          group.myMatch ? (
+            <RevealCard
+              groupId={group.id}
+              decoys={group.members
+                .filter((member) => member.id !== group.me.membershipId)
+                .map((member) => member.displayName)}
+              revealedName={group.myMatch.receiverName}
+            />
+          ) : (
+            <section className={cardClass}>
+              <h2 className="text-lg font-bold">The names have been drawn</h2>
+              <p className="mt-1 text-muted">You were not part of this draw.</p>
+            </section>
+          )
         ) : null}
       </main>
     </>
