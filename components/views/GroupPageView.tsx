@@ -8,6 +8,7 @@ import { RevealCard } from "@/components/RevealCard";
 import { ScrollOnArrival } from "@/components/ScrollOnArrival";
 import { StatusBadge } from "@/components/StatusBadge";
 import { buttonSecondary, monoLabel } from "@/components/ui";
+import { SiteFooter } from "@/components/SiteFooter";
 import { MIN_MEMBERS, getGroupStatus } from "@/lib/group-status";
 import type { GroupView } from "@/lib/groups";
 import { formatInviteCode } from "@/lib/invite-code";
@@ -164,6 +165,7 @@ export function GroupPageView({ group, now }: { group: GroupView; now: Date }) {
           </section>
         </div>
       </main>
+      <SiteFooter />
     </>
   );
 }

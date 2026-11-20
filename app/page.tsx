@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { withAuth } from "@workos-inc/authkit-nextjs";
+import { Credit } from "@/components/Credit";
 import { Header } from "@/components/Header";
 import { HeroTag } from "@/components/HeroTag";
 import { HowItWorks } from "@/components/HowItWorks";
@@ -136,12 +137,13 @@ export default async function LandingPage() {
         </section>
       </main>
 
-      <footer className="bg-ink">
+      <footer id="footer" className="bg-ink">
         <div className="reveal-on-scroll mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-8 gap-y-2 px-4 py-6 sm:px-6">
           <p className="font-serif text-xl">{SITE_NAME}</p>
           <p className={`${monoLabel} text-surface-muted`}>
             {PRODUCT_NAME} for friends, family and the office
           </p>
+          <Credit className="basis-full" />
         </div>
       </footer>
     </div>

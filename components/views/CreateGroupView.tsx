@@ -1,6 +1,7 @@
 import { CreateGroupForm } from "@/components/CreateGroupForm";
 import { Header } from "@/components/Header";
 import { monoLabel } from "@/components/ui";
+import { SiteFooter } from "@/components/SiteFooter";
 
 export function CreateGroupView() {
   return (
@@ -20,6 +21,7 @@ export function CreateGroupView() {
           <CreateGroupForm />
         </div>
       </main>
+      <SiteFooter />
     </>
   );
 }

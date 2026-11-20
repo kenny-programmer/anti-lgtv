@@ -5,6 +5,7 @@ import { LocalTime } from "@/components/LocalTime";
 import { StatusBadge } from "@/components/StatusBadge";
 import { HangingTag } from "@/components/HangingTag";
 import { buttonPrimary, monoLabel, textLink } from "@/components/ui";
+import { SiteFooter } from "@/components/SiteFooter";
 import { getGroupStatus } from "@/lib/group-status";
 import type { GroupSummary } from "@/lib/groups";
 import { PRODUCT_NAME } from "@/lib/site";
@@ -105,6 +106,7 @@ export function DashboardView({ groups, now }: { groups: GroupSummary[]; now: Da
           )}
         </div>
       </main>
+      <SiteFooter />
     </>
   );
 }

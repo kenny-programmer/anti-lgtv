@@ -1,6 +1,7 @@
 import { Header } from "@/components/Header";
 import { JoinGroupForm } from "@/components/JoinGroupForm";
 import { monoLabel } from "@/components/ui";
+import { SiteFooter } from "@/components/SiteFooter";
 
 export function JoinGroupView({ initialCode }: { initialCode: string }) {
   return (
@@ -20,6 +21,7 @@ export function JoinGroupView({ initialCode }: { initialCode: string }) {
           <JoinGroupForm initialCode={initialCode} />
         </div>
       </main>
+      <SiteFooter />
     </>
   );
 }

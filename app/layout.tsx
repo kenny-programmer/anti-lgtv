@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Mono, Fraunces, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
-import { SITE_NAME } from "@/lib/site";
+import { AUTHOR_NAME, AUTHOR_URL, SITE_NAME } from "@/lib/site";
 
 const display = Fraunces({
   subsets: ["latin"],
@@ -26,6 +26,8 @@ const code = DM_Mono({
 
 export const metadata: Metadata = {
   title: { default: SITE_NAME, template: `%s | ${SITE_NAME}` },
+  authors: [{ name: AUTHOR_NAME, url: AUTHOR_URL }],
+  creator: AUTHOR_NAME,
   description:
     "ANTI-LGTV Exchange Gift: run a private holiday gift exchange with an invite code, one fair draw, and everyone opens only their own tag.",
 };
