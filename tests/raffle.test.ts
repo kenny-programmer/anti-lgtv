@@ -40,6 +40,31 @@ describe("drawAssignments", () => {
     expect(seen.size).toBeGreaterThan(10);
   });
 
+  it("asks the random source for a bound that shrinks from n down to 2", () => {
+    const bounds: number[] = [];
+    drawAssignments(ids(5), (max) => {
+      bounds.push(max);
+      return 0;
+    });
+    expect(bounds).toEqual([5, 4, 3, 2]);
+  });
+
+  it("pairs members in one single cycle", () => {
+    for (const n of [2, 3, 4, 5, 8, 12]) {
+      for (let run = 0; run < 100; run++) {
+        const next = new Map(drawAssignments(ids(n)).map((p) => [p.giver, p.receiver]));
+        const visited = new Set<string>();
+        let current = "id-0";
+        for (let step = 0; step < n; step++) {
+          visited.add(current);
+          current = next.get(current) as string;
+        }
+        expect(visited.size).toBe(n);
+        expect(current).toBe("id-0");
+      }
+    }
+  });
+
   it("uses the injected random source", () => {
     expect(drawAssignments(ids(4), () => 0)).toEqual([
       { giver: "id-1", receiver: "id-2" },

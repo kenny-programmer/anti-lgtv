@@ -33,7 +33,12 @@ describe("buildRevealSequence", () => {
 
   it("copes with no decoys", () => {
     const sequence = buildRevealSequence([], "Eve", { frames: 5 });
-    expect(sequence.map((frame) => frame.name)).toEqual(Array(5).fill("Eve"));
+    expect(sequence).toEqual([{ name: "Eve", delayMs: 0 }]);
+  });
+
+  it("copes with decoys that contain only the final name", () => {
+    const sequence = buildRevealSequence(["Eve"], "Eve");
+    expect(sequence).toEqual([{ name: "Eve", delayMs: 0 }]);
   });
 
   it("is deterministic for an injected random source", () => {
