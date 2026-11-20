@@ -42,6 +42,10 @@ apply migrations for you: run `npx netlify database migrations apply` once, and 
 a migration (it works whether or not `netlify dev` is running; `npx netlify database status` shows
 what is applied or pending).
 
+Port 3000 must be free: `netlify.toml` points Netlify at Next's dev server on port 3000, and Next
+moves to another port if 3000 is taken. `netlify dev` also prints "Unable to determine public
+folder"; that notice is harmless.
+
 No database account or setup is needed: in production Netlify provisions the database and applies
 `netlify/database/migrations/` on deploy.
 
@@ -105,21 +109,23 @@ for each extra account). Apply migrations, start `npm run dev`, then:
    to WorkOS and offers only Google.
 2. Account A signs in and lands on `/dashboard` with the empty state. No Google name or email
    appears anywhere.
-3. A creates a group with a deadline 2 minutes from now and is redirected to the group page showing
-   the invite code. "Copy code" and "Copy invite link" work, and A is listed as "you - organizer".
+3. A creates a group with a deadline about 5 minutes from now (enough time for the other accounts to
+   join) and is redirected to the group page showing the invite code. "Copy code" and "Copy invite link" work, and A is listed as "you - organizer".
 4. Account B opens the invite link while signed out, is sent through sign-in, and returns to the
    join page with the code pre-filled; B picks a name and joins. Trying A's name (in any
    capitalization) shows the "already uses that name" error.
 5. After the deadline with fewer than 3 members, every member sees a "Not enough people joined"
    section (with a link to start a new group) and no raffle button, and nobody can join any more.
    With 3 or more members (a third account C must join before the deadline) the organizer sees
-   the "Run the raffle" button instead.
+   the "Run the raffle" button instead. The two cases cannot both happen in one group: to see the
+   under-3 case, create a second group that only two accounts join.
 6. Before the deadline there is no raffle button. After the deadline A clicks "Run the raffle",
    confirms the prompt, and the page flips to the names-drawn state. After reloading, the button
    is gone, and B cannot join with the code any more.
 7. Each member sees "Reveal my match", clicks it, watches the names roll and land on one name;
    reloading shows the name directly with no animation. Collect everyone's result: all names are
    distinct and nobody got themselves.
-8. In the browser's View Source for the page of a member who has not revealed yet, the match name
-   is not present.
+8. In the browser's View Source for the page of a member who has not revealed yet, there is no
+   marker of who their match is. (The source lists the other members' names so the roll animation
+   has names to cycle through, but nothing says which one is the match.)
 9. Open `/groups/<id>` of a group from a non-member account: 404.
