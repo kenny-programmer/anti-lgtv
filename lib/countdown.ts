@@ -1,4 +1,5 @@
 export function formatCountdown(ms: number): string {
+  if (!Number.isFinite(ms)) return "";
   if (ms <= 0) return "closed";
   const totalMinutes = Math.floor(ms / 60_000);
   if (totalMinutes < 1) return "less than a minute left";

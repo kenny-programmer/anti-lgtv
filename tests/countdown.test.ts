@@ -22,3 +22,11 @@ describe("formatCountdown", () => {
     expect(formatCountdown(2 * DAY + 3 * HOUR + 59 * MIN)).toBe("2d 3h left");
   });
 });
+
+describe("formatCountdown non-finite input", () => {
+  it("returns empty text for NaN, Infinity and -Infinity", () => {
+    expect(formatCountdown(NaN)).toBe("");
+    expect(formatCountdown(Infinity)).toBe("");
+    expect(formatCountdown(-Infinity)).toBe("");
+  });
+});
