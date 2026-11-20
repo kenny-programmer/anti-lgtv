@@ -1,4 +1,4 @@
-import { query, withTransaction, type Db } from "@/lib/db";
+import { isUuid, query, withTransaction, type Db } from "@/lib/db";
 import { getGroupStatus } from "@/lib/group-status";
 import { generateInviteCode, normalizeInviteCode } from "@/lib/invite-code";
 
@@ -104,4 +104,106 @@ export async function joinGroup(
   if (existing.length > 0) return { ok: false, error: "already_member", groupId: group.id };
   if (getGroupStatus(group, now) !== "open") return { ok: false, error: "closed" };
   return { ok: false, error: "name_taken" };
+}
+
+export type GroupMember = { id: string; displayName: string; isOrganizer: boolean };
+
+export type GroupView = {
+  id: string;
+  name: string;
+  inviteCode: string;
+  signupDeadline: Date;
+  raffledAt: Date | null;
+  isAdmin: boolean;
+  me: { membershipId: string; displayName: string };
+  members: GroupMember[];
+  myMatch: { revealed: boolean; receiverName: string | null } | null;
+};
+
+export async function getGroupForMember(
+  db: Db,
+  input: { groupId: string; userId: string },
+): Promise<GroupView | null> {
+  if (!isUuid(input.groupId)) return null;
+
+  const [row] = await query<{
+    id: string;
+    name: string;
+    inviteCode: string;
+    signupDeadline: Date;
+    raffledAt: Date | null;
+    createdBy: string;
+    membershipId: string;
+    displayName: string;
+  }>(
+    db,
+    `SELECT g.id, g.name, g.invite_code AS "inviteCode", g.signup_deadline AS "signupDeadline",
+            g.raffled_at AS "raffledAt", g.created_by AS "createdBy",
+            m.id AS "membershipId", m.display_name AS "displayName"
+     FROM groups g
+     JOIN memberships m ON m.group_id = g.id AND m.user_id = $2
+     WHERE g.id = $1`,
+    [input.groupId, input.userId],
+  );
+  if (!row) return null;
+
+  const members = await query<GroupMember>(
+    db,
+    `SELECT m.id, m.display_name AS "displayName", (m.user_id = g.created_by) AS "isOrganizer"
+     FROM memberships m
+     JOIN groups g ON g.id = m.group_id
+     WHERE m.group_id = $1
+     ORDER BY m.joined_at, m.id`,
+    [input.groupId],
+  );
+
+  let myMatch: GroupView["myMatch"] = null;
+  if (row.raffledAt) {
+    const [assignment] = await query<{ revealedAt: Date | null; receiverName: string }>(
+      db,
+      `SELECT a.revealed_at AS "revealedAt", r.display_name AS "receiverName"
+       FROM assignments a
+       JOIN memberships r ON r.id = a.receiver_membership_id
+       WHERE a.group_id = $1 AND a.giver_membership_id = $2`,
+      [input.groupId, row.membershipId],
+    );
+    if (assignment) {
+      const revealed = assignment.revealedAt !== null;
+      myMatch = { revealed, receiverName: revealed ? assignment.receiverName : null };
+    }
+  }
+
+  return {
+    id: row.id,
+    name: row.name,
+    inviteCode: row.inviteCode,
+    signupDeadline: row.signupDeadline,
+    raffledAt: row.raffledAt,
+    isAdmin: row.createdBy === input.userId,
+    me: { membershipId: row.membershipId, displayName: row.displayName },
+    members,
+    myMatch,
+  };
+}
+
+export type GroupSummary = {
+  id: string;
+  name: string;
+  signupDeadline: Date;
+  raffledAt: Date | null;
+  memberCount: number;
+  isAdmin: boolean;
+};
+
+export async function listGroupsForUser(db: Db, userId: string): Promise<GroupSummary[]> {
+  return query<GroupSummary>(
+    db,
+    `SELECT g.id, g.name, g.signup_deadline AS "signupDeadline", g.raffled_at AS "raffledAt",
+            (SELECT count(*)::int FROM memberships c WHERE c.group_id = g.id) AS "memberCount",
+            (g.created_by = $1) AS "isAdmin"
+     FROM groups g
+     JOIN memberships m ON m.group_id = g.id AND m.user_id = $1
+     ORDER BY g.created_at DESC, g.id`,
+    [userId],
+  );
 }
