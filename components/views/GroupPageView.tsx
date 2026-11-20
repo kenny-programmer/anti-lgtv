@@ -6,6 +6,7 @@ import { LocalTime } from "@/components/LocalTime";
 import { RaffleButton } from "@/components/RaffleButton";
 import { RevealCard } from "@/components/RevealCard";
 import { ScrollOnArrival } from "@/components/ScrollOnArrival";
+import { SignupSettings } from "@/components/SignupSettings";
 import { StatusBadge } from "@/components/StatusBadge";
 import { buttonSecondary, monoLabel } from "@/components/ui";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -77,7 +78,7 @@ export function GroupPageView({ group, now }: { group: GroupView; now: Date }) {
                   Signups closed with fewer than {MIN_MEMBERS} people, so the raffle cannot run for
                   this group.{" "}
                   {group.isAdmin
-                    ? "You can start a new group with a later deadline and invite everyone again."
+                    ? "Set a later close date below to let people join again, or start a new group."
                     : "The organizer can start a new group with a later deadline."}
                 </p>
                 <Link href="/groups/new" className={`${buttonSecondary} mt-6`}>
@@ -103,6 +104,14 @@ export function GroupPageView({ group, now }: { group: GroupView; now: Date }) {
                   </p>
                 )}
               </section>
+            ) : null}
+
+            {group.isAdmin && status !== "raffled" ? (
+              <SignupSettings
+                groupId={group.id}
+                open={status === "open"}
+                memberCount={group.members.length}
+              />
             ) : null}
 
             {status === "raffled" ? (

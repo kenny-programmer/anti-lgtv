@@ -87,13 +87,13 @@ npm run lint
 
 ## Limitations (v1)
 
-- The signup deadline cannot be edited after the group is created.
+- The organizer can close signups early or move the close date (Signup settings on the group page), but only until the names are drawn.
 - Members cannot leave a group and the organizer cannot remove members.
 - There are no email notifications; share the invite code or link yourself.
 - There are no exclusion pairs (for example "partners must not draw each other").
 - A group needs at least 3 members to be raffled. If the signup deadline passes with fewer than 3,
-  that group cannot be raffled and nobody can join it any more; the organizer should start a new
-  group with a later deadline.
+  that group cannot be raffled and nobody can join it any more; the organizer can set a later close
+  date in Signup settings to reopen it, or start a new group.
 
 ## Privacy
 
