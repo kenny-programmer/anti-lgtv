@@ -4,6 +4,7 @@ import { CreateGroupView } from "@/components/views/CreateGroupView";
 import { DashboardView } from "@/components/views/DashboardView";
 import { GroupPageView } from "@/components/views/GroupPageView";
 import { JoinGroupView } from "@/components/views/JoinGroupView";
+import { LotteryPreview } from "./LotteryPreview";
 import { SCENES, dashboardFixture, groupFixture, isScene } from "./fixtures";
 
 // Dev-only: renders the real page views with fixture data so the signed-in
@@ -13,11 +14,11 @@ export const metadata = { title: "Design preview", robots: { index: false } };
 export default async function DesignPreviewPage({
   searchParams,
 }: {
-  searchParams: Promise<{ scene?: string | string[] }>;
+  searchParams: Promise<{ scene?: string | string[]; t?: string | string[] }>;
 }) {
   if (process.env.NODE_ENV === "production") notFound();
 
-  const { scene } = await searchParams;
+  const { scene, t } = await searchParams;
   const now = new Date();
 
   if (!isScene(scene)) {
@@ -42,6 +43,10 @@ export default async function DesignPreviewPage({
   if (scene === "create") return <CreateGroupView />;
   if (scene === "join") return <JoinGroupView initialCode="" />;
   if (scene === "join-prefilled") return <JoinGroupView initialCode="ABCD-1234" />;
+  if (scene === "reveal-lottery") {
+    const seconds = Number(typeof t === "string" ? t : 0);
+    return <LotteryPreview t={Number.isFinite(seconds) ? seconds : 0} />;
+  }
 
   const group = groupFixture(scene, now);
   if (!group) notFound();

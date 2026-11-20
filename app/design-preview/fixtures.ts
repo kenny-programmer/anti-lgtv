@@ -19,6 +19,7 @@ export const SCENES = [
   "create",
   "join",
   "join-prefilled",
+  "reveal-lottery",
 ] as const;
 
 export type Scene = (typeof SCENES)[number];

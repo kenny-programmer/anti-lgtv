@@ -1,20 +1,86 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { revealMatchAction } from "@/app/groups/[groupId]/actions";
 import { Confetti } from "@/components/Confetti";
 import { FormAlert } from "@/components/FormAlert";
 import { GiftTag } from "@/components/GiftTag";
-import { scrollToCenter } from "@/components/scroll-motion";
 import { HangingTag, TAG_NUDGE } from "@/components/HangingTag";
+import { LotteryStage } from "@/components/LotteryStage";
+import { prefersReducedMotion, scrollToCenter } from "@/components/scroll-motion";
 import { buttonPrimary, monoLabel } from "@/components/ui";
-import { buildRevealSequence } from "@/lib/reveal-sequence";
+import { BALL_COUNT } from "@/lib/lottery";
 
-type Phase = "idle" | "loading" | "rolling" | "done";
+type Phase = "idle" | "loading" | "drawing" | "done";
+
+/** What the tag shows: sealed, ready for the paper to land, or the drawn name. */
+export type TagFace = "waiting" | "landing" | "done";
+
+/**
+ * The hanging gift tag of the reveal. `tagRef` wraps the whole hanging tag
+ * (twine included) so the lottery stage can fade it; `nameRef` is the
+ * (invisible) name the paper lands on.
+ */
+export function RevealTag({
+  face,
+  name,
+  celebrate = false,
+  tagRef,
+  nameRef,
+  doneRef,
+}: {
+  face: TagFace;
+  name: string | null;
+  celebrate?: boolean;
+  tagRef?: RefObject<HTMLDivElement | null>;
+  nameRef?: RefObject<HTMLSpanElement | null>;
+  doneRef?: RefObject<HTMLDivElement | null>;
+}) {
+  return (
+    <div ref={tagRef}>
+      <HangingTag stringLength={64} tagDrop={110} gain={0.4} breeze={0.4}>
+        <div ref={doneRef} className="relative">
+          {face === "waiting" ? (
+            <GiftTag stringLength={0}>
+              <div className="min-h-[6.5rem]">
+                <div className="flex h-[3.25rem] items-end bg-ink px-3 pb-2.5">
+                  <span className={`${monoLabel} text-paper`}>Hidden until you open it</span>
+                </div>
+              </div>
+              <div className="h-10" />
+            </GiftTag>
+          ) : (
+            <GiftTag label={null} stringLength={0}>
+              {/* Purely visual: the name is announced once by the status element. */}
+              <div aria-hidden="true">
+                <p className={monoLabel}>You are gifting</p>
+                <p className="mt-2 min-h-[6.5rem] overflow-hidden break-words font-serif text-[2.9rem] leading-[1.02] tracking-[-0.01em] text-ink">
+                  <span ref={nameRef} className={face === "landing" ? "invisible" : undefined}>
+                    {name}
+                  </span>
+                </p>
+                <div className="h-10" />
+                {face === "done" ? (
+                  <span
+                    className={`stamp absolute bottom-5 right-5 px-2 py-0.5 font-mono text-2xl font-medium uppercase leading-tight tracking-[0.06em] ${
+                      celebrate ? "stamp-slam" : ""
+                    }`}
+                  >
+                    Drawn
+                  </span>
+                ) : null}
+              </div>
+            </GiftTag>
+          )}
+          {celebrate ? <Confetti /> : null}
+        </div>
+      </HangingTag>
+    </div>
+  );
+}
 
 export function RevealCard({
   groupId,
-  decoys,
   revealedName,
 }: {
   groupId: string;
@@ -22,9 +88,13 @@ export function RevealCard({
   revealedName: string | null;
 }) {
   const [phase, setPhase] = useState<Phase>(revealedName ? "done" : "idle");
-  const [shown, setShown] = useState(revealedName ?? "");
+  const [name, setName] = useState<string | null>(revealedName);
+  const [paperOut, setPaperOut] = useState(false);
+  const [chosen, setChosen] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const cancelled = useRef(false);
+  const tagRef = useRef<HTMLDivElement>(null);
+  const nameRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     cancelled.current = false;
@@ -33,43 +103,52 @@ export function RevealCard({
     };
   }, []);
 
+  function stop(message: string) {
+    // The bowl goes; the sealed tag fades back in.
+    const tag = tagRef.current;
+    if (tag) {
+      tag.style.transition = "opacity 300ms ease-out";
+      tag.style.opacity = "1";
+    }
+    setPhase("idle");
+    setName(null);
+    setError(message);
+  }
+
   async function reveal() {
-    setPhase("loading");
     setError(null);
+    const animate = !prefersReducedMotion();
+    if (animate) {
+      if (tagRef.current) tagRef.current.style.transition = "";
+      // Randomness lives in the click handler only: which ball gets picked.
+      setChosen(Math.floor(Math.random() * BALL_COUNT));
+      setPaperOut(false);
+      setPhase("drawing");
+    } else {
+      setPhase("loading");
+    }
     try {
       const result = await revealMatchAction(groupId);
+      if (cancelled.current) return;
       if (!result.ok) {
-        setPhase("idle");
-        setError(result.error);
+        stop(result.error);
         return;
       }
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        setShown(result.name);
-        setPhase("done");
-        return;
-      }
-      setPhase("rolling");
-      for (const frame of buildRevealSequence(decoys, result.name)) {
-        if (cancelled.current) return;
-        setShown(frame.name);
-        await new Promise((resolve) => window.setTimeout(resolve, frame.delayMs));
-      }
-      if (!cancelled.current) setPhase("done");
+      setName(result.name);
+      if (!animate) setPhase("done");
     } catch {
-      setPhase("idle");
-      setError("Something went wrong. Please try again.");
+      if (!cancelled.current) stop("Something went wrong. Please try again.");
     }
   }
 
   // Presentation only: on a phone, glide the tag to the middle of the screen
-  // first, then run the reveal exactly as before.
-  const tagRef = useRef<HTMLElement>(null);
+  // first, then run the reveal.
+  const sectionRef = useRef<HTMLElement>(null);
   async function centerThenReveal() {
-    if (tagRef.current) await scrollToCenter(tagRef.current);
+    if (sectionRef.current) await scrollToCenter(sectionRef.current);
     await reveal();
   }
 
-  const waiting = phase === "idle" || phase === "loading";
   const doneRef = useRef<HTMLDivElement>(null);
   // Presentation only: celebrate a reveal that happens on this visit, not a
   // tag that was already open when the page loaded.
@@ -83,26 +162,37 @@ export function RevealCard({
     }
   }, [celebrate]);
 
+  const face: TagFace =
+    phase === "done" ? "done" : phase === "drawing" && paperOut ? "landing" : "waiting";
+  const busy = phase === "loading" || phase === "drawing";
+
   return (
-    <section ref={tagRef}>
-      {waiting ? (
+    <section ref={sectionRef}>
+      {/* The tag and the bowl share this box, so nothing below moves. */}
+      <div className="relative w-[19rem] max-w-full">
+        <RevealTag
+          face={face}
+          name={name}
+          celebrate={celebrate}
+          tagRef={tagRef}
+          nameRef={nameRef}
+          doneRef={doneRef}
+        />
+        {phase === "drawing" ? (
+          <LotteryStage
+            name={name}
+            chosen={chosen}
+            getTag={() => tagRef.current}
+            getTarget={() => nameRef.current}
+            onPaper={() => setPaperOut(true)}
+            onDone={() => setPhase("done")}
+          />
+        ) : null}
+      </div>
+      {phase === "done" ? (
+        <p className="mt-8 text-muted">Keep it secret. Only you can see this.</p>
+      ) : (
         <>
-          <HangingTag
-            stringLength={64}
-            tagDrop={110}
-            gain={0.4}
-            breeze={0.4}
-            className="w-[19rem] max-w-full"
-          >
-            <GiftTag stringLength={0}>
-              <div className="min-h-[6.5rem]">
-                <div className="flex h-[3.25rem] items-end bg-ink px-3 pb-2.5">
-                  <span className={`${monoLabel} text-paper`}>Hidden until you open it</span>
-                </div>
-              </div>
-              <div className="h-10" />
-            </GiftTag>
-          </HangingTag>
           <p className={`${monoLabel} mt-10 text-muted`}>The names are drawn</p>
           <h2 className="mt-3 max-w-[18ch] font-serif text-[2rem] leading-tight tracking-[-0.01em]">
             Ready to find out who you are gifting?
@@ -110,10 +200,10 @@ export function RevealCard({
           <button
             type="button"
             onClick={() => void centerThenReveal()}
-            disabled={phase === "loading"}
+            disabled={busy}
             className={`${buttonPrimary} mt-6`}
           >
-            {phase === "loading" ? "Shuffling..." : "Reveal my match"}
+            {busy ? "Shuffling..." : "Reveal my match"}
           </button>
           {error ? (
             <FormAlert trigger={error} className="mt-3 text-sm font-medium text-accent">
@@ -121,57 +211,13 @@ export function RevealCard({
             </FormAlert>
           ) : null}
         </>
-      ) : (
-        <>
-          <HangingTag
-            stringLength={64}
-            tagDrop={110}
-            gain={0.4}
-            breeze={0.4}
-            className="w-[19rem] max-w-full"
-          >
-            <div ref={doneRef} className="relative">
-              <GiftTag label={null} stringLength={0}>
-                {/* Purely visual: the rolling names must not be announced, and the final
-                name is announced once by the status element below. */}
-                <div aria-hidden="true">
-                  <p className={monoLabel}>{phase === "done" ? "You are gifting" : "Drawing..."}</p>
-                  <p
-                    key={phase}
-                    className={`mt-2 min-h-[6.5rem] overflow-hidden break-words font-serif text-[2.9rem] leading-[1.02] tracking-[-0.01em] ${
-                      phase === "done" ? "text-ink" : "text-ink/70"
-                    }`}
-                  >
-                    {phase === "rolling" ? (
-                      <span key={shown} className="flap">
-                        {shown}
-                      </span>
-                    ) : (
-                      shown
-                    )}
-                  </p>
-                  <div className="h-10" />
-                  {phase === "done" ? (
-                    <span
-                      className={`stamp absolute bottom-5 right-5 px-2 py-0.5 font-mono text-2xl font-medium uppercase leading-tight tracking-[0.06em] ${
-                        celebrate ? "stamp-slam" : ""
-                      }`}
-                    >
-                      Drawn
-                    </span>
-                  ) : null}
-                </div>
-              </GiftTag>
-              {celebrate ? <Confetti /> : null}
-            </div>
-          </HangingTag>
-          {phase === "done" ? (
-            <p className="mt-8 text-muted">Keep it secret. Only you can see this.</p>
-          ) : null}
-        </>
       )}
-      <p className="sr-only" role="status">
-        {phase === "done" ? `You are gifting ${shown}` : ""}
+      <p className="sr-only" role="status" aria-live="polite">
+        {phase === "done" && name
+          ? `You are gifting ${name}`
+          : phase === "drawing" || phase === "loading"
+            ? "Drawing your match"
+            : ""}
       </p>
     </section>
   );
